@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Molecule Generator</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    /* Style for the placeholder area */
+    #placeholder {
+      text-align: center;
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: #333;
+      max-width: 600px;
+    }
+    #placeholder img {
+      max-width: 200px;
+      display: block;
+      margin: 10px auto;
+    }
+    /* Style for the run button */
+    #runBtn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #runBtn:hover {
+      background-color: #0056b3;
+    }
+    /* Style for toggle buttons in output areas */
+    .toggle-btn {
+      margin: 5px 0;
+      padding: 5px 10px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Funny placeholder that takes up space before running -->
+  <div id="placeholder">
+    <h2>Welcome to the molecule thing</h2>
+    <p>We generate molecules and stuff</p>
+    <img src="https://media.giphy.com/media/26BkNrGhy4DKnbD9u/giphy.gif" alt="Dancing unicorn">
+    <p>Hit the "Run" button below to run!</p>
+  </div>
+
+  <!-- Run button to trigger the notebook execution -->
+  <button id="runBtn">Run</button>
+
+  <!-- Container for the notebook output -->
+  <div id="notebook-output">
+    <!-- This content will be replaced by the notebook output (output.html) -->
+  </div>
+
+  <script>
+    $(document).ready(function(){
+      // When the Run button is clicked
+      $("#runBtn").click(function(){
+        // Hide the funny placeholder
+        $("#placeholder").fadeOut();
+
+        // Send the POST request to run the notebook and get its output
+        $.ajax({
+          url: '/run_notebook',
+          type: 'POST',
+          success: function(response) {
+            if(response.output) {
+              $("#notebook-output").html(response.output);
+              // Optionally add toggle functionality for non-image outputs here
+              $("#notebook-output .jp-OutputArea").each(function(){
+                var $outputArea = $(this);
+                if ($outputArea.find(".jp-RenderedImage").length === 0) {
+                  var $btn = $("<button class='toggle-btn'>Show/Hide Output</button>");
+                  $outputArea.hide();
+                  $outputArea.before($btn);
+                  $btn.click(function(){
+                    $outputArea.toggle();
+                  });
+                }
+              });
+            } else {
+              $("#notebook-output").html('No output received.');
+            }
+          },
+          error: function(err) {
+            $("#notebook-output").html('Error: ' + err.responseText);
+          }
+
+        });
+      });
+    });
+  </script>
+</body>
+</html>

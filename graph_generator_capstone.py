@@ -44,7 +44,7 @@ class GraphGenerator_test(tf.keras.Model):
      self.latent_dim = latent_dim
 
      self.mlp = models.Sequential([
-         layers.Dense(128, input_shape = (latent_dim,), activation="leaky_relu"),
+         layers.Dense(128, input_shape = (latent_dim,), activation = "leaky_relu"),
          layers.Dense(256, activation = "leaky_relu"),
          layers.Dense((num_nodes * num_nodes) + (num_nodes * node_features), activation = "softmax")
      ])
@@ -61,7 +61,7 @@ class GraphGenerator_test(tf.keras.Model):
     node_feature_flat = output[:, self.num_nodes * self.num_nodes:]
 
     adj = tf.reshape(adj_flat, (batch_size, self.num_nodes, self.num_nodes))
-    adj = (adj + tf.transpose(adj, perm=[0, 2, 1])) / 2
+    adj = (adj + tf.transpose(adj, perm = [0, 2, 1])) / 2
     adj = tf.nn.softmax(adj, axis=-1)
     adj = tf.cast(adj, tf.float32)
 
@@ -106,10 +106,10 @@ class GraphDiscriminator_test(tf.keras.Model):
         self.condition_dim = num_nodes * node_features
 
         self.mlp = models.Sequential([
-            layers.Dense(256, input_shape = (self.input_dim + self.condition_dim,), activation='leaky_relu'),
-            layers.Dense(128, activation='leaky_relu'),
+            layers.Dense(256, input_shape = (self.input_dim + self.condition_dim,), activation = 'leaky_relu'),
+            layers.Dense(128, activation = 'leaky_relu'),
             layers.BatchNormalization(),
-            layers.Dense(1, activation='sigmoid')
+            layers.Dense(1, activation = 'sigmoid')
         ])
 
     def call(self, adj, node_features):

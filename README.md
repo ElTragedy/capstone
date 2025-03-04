@@ -3,6 +3,10 @@ this is capstone for spring 2025
 
 # Directions
 
+## Python
+
+Ensure that you have python 3.12 installed!
+
 ## Compiling the website
 
 Run the vitual python environent in the directory capstone/

@@ -2,6 +2,8 @@ from app import app
 from flask import render_template, request, jsonify
 import subprocess  # or use your own notebook runner code
 import sys
+import rdkit.Chem as Chem
+import rdkit.Chem.AllChem as AllChem
 
 @app.route('/')
 def index():
@@ -23,3 +25,24 @@ def run_notebook():
         return jsonify({'output': output})
     except subprocess.CalledProcessError as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/get_molecule')
+def get_molecule():
+    try:
+        # Read SMILES string from file
+        with open("notebooks/molecule.smiles", "r") as file:
+            smiles = file.read().strip()
+
+        # Convert SMILES to 3D molecule
+        mol = Chem.MolFromSmiles(smiles)
+        mol = Chem.AddHs(mol)  # Add hydrogen atoms
+        AllChem.EmbedMolecule(mol)  # Generate 3D coordinates
+
+        # Convert to MOL format
+        mol_block = Chem.MolToMolBlock(mol)
+        
+        print(mol_block)
+        
+        return mol_block
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

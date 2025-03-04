@@ -3,6 +3,7 @@
 <head>
   <title>Molecule Generator</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
   <style>
     /* Style for the placeholder area */
     #placeholder {
@@ -46,6 +47,12 @@
       border-radius: 4px;
       cursor: pointer;
     }
+    #viewer canvas {
+    position: relative !important; /* Ensure it doesn't use absolute positioning */
+    display: block; /* Ensures it behaves properly */
+    margin: 20px auto; /* Centers it */
+    max-width: 100%; /* Prevents overflow */
+    }
   </style>
 </head>
 <body>
@@ -64,6 +71,12 @@
   <div id="notebook-output">
     <!-- This content will be replaced by the notebook output (output.html) -->
   </div>
+  <!-- Container for the molecule viewer (placed after notebook output) -->
+  <div id="viewer-container">
+  <!-- This content will be replaced by the molecule viewer -->
+  </div>
+
+
 
   <script>
     $(document).ready(function(){
@@ -94,6 +107,7 @@
             } else {
               $("#notebook-output").html('No output received.');
             }
+      fetchAndRenderMolecule();
           },
           error: function(err) {
             $("#notebook-output").html('Error: ' + err.responseText);
@@ -101,7 +115,34 @@
 
         });
       });
-    });
+
+      function fetchAndRenderMolecule() {
+        fetch('/get_molecule')
+          .then(response => response.text())
+          .then(mol => {
+            if (mol) {
+              console.log("MOL received:", mol);
+  
+              // Create a new viewer div dynamically
+              $("#viewer-container").html('<div id="viewer" style="width: 800px; height: 400px;"></div>');
+  
+              // Initialize 3Dmol viewer
+              var viewer = $3Dmol.createViewer($("#viewer"), { backgroundColor: "white" });
+              // Load MOL structure
+              viewer.addModel(mol, "mol");
+  
+              // Set style and render
+              viewer.setStyle({}, { stick: {} });
+              viewer.zoomTo();
+              viewer.render();
+            } else {
+              console.error("No molecule data received.");
+            }
+          })
+          .catch(error => console.error("Error fetching molecule:", error));
+      }
+  });
+
   </script>
 </body>
 </html>

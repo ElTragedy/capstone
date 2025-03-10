@@ -4,6 +4,8 @@ import subprocess  # or use your own notebook runner code
 import sys
 import rdkit.Chem as Chem
 import rdkit.Chem.AllChem as AllChem
+import requests
+from bs4 import BeautifulSoup
 
 @app.route('/')
 def index():
@@ -46,3 +48,20 @@ def get_molecule():
         return mol_block
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+    @app.route('/get_mol_info')
+    def get_mol_info():
+        try:
+            #read from this link https://pubchem.ncbi.nlm.nih.gov/#query=[smile here]
+            #scrape the data and return it
+            
+            smile = 'notebooks/molecule.smiles'
+            url = 'https://pubchem.ncbi.nlm.nih.gov/#query=' + smile
+            page = requests.get(url)
+            soup = BeautifulSoup(page.content, 'html.parser')
+            mol_info = soup.find_all('div', class_='f-0875')
+            print(mol_info)
+            
+            return jsonify(mol_info)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500

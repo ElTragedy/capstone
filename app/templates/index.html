@@ -75,6 +75,9 @@
   <div id="viewer-container">
   <!-- This content will be replaced by the molecule viewer -->
   </div>
+  <div id="mol-info">
+    <!-- This content will be replaced by the molecule info -->
+  </div>
 
 
 
@@ -108,6 +111,7 @@
               $("#notebook-output").html('No output received.');
             }
       fetchAndRenderMolecule();
+      fetchMolInfo();
           },
           error: function(err) {
             $("#notebook-output").html('Error: ' + err.responseText);
@@ -141,6 +145,26 @@
           })
           .catch(error => console.error("Error fetching molecule:", error));
       }
+
+      function fetchMolInfo() {
+        fetch('/get_molecule_info')
+          .then(response => response.json())
+          .then(data => {
+            if (data) {
+              console.log("Molecule info received:", data);
+              // Display molecule info
+              $("#mol-info").html(`
+                <h3>Molecule Info</h3>
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Formula:</strong> ${data.formula}</p>
+                <p><strong>Weight:</strong> ${data.weight}</p>
+              `);
+            } else {
+              console.error("No molecule info received.");
+            }
+          })
+          .catch(error => console.error("Error fetching molecule info:", error));
+        }
   });
 
   </script>

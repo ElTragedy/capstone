@@ -3,9 +3,8 @@ from tensorflow.keras import layers, models
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
-
-%run /PyFiles/matrix_to_mol.py
-%run /notebooks/reinforcement_training.ipynb
+from matrix_to_mol import adjacency_matrix_to_mol
+from rewards import validity_reward, uniqueness_reward, novelty_reward
 
 class GraphGenerator(tf.keras.Model):
     def __init__(self, num_nodes, node_features, latent_dim):
@@ -52,7 +51,7 @@ class GraphGenerator(tf.keras.Model):
         loss_func = tf.keras.losses.BinaryCrossentropy(from_logits=False)
         return loss_func(real_output, fake_output)
 
-    def fit(self, dataset, discriminator, epochs=10):
+    def fit(self, dataset, discriminator, train_smiles, epochs=10):
         d_loss_list = []
         g_loss_list = []
         r_loss_list = []

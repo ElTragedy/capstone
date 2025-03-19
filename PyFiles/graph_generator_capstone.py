@@ -89,18 +89,14 @@ class GraphGenerator(tf.keras.Model):
                     gen_adj, gen_node_features = self(z)
                     gen_combined = [gen_adj, gen_node_features]
                     curr_mol = adjacency_matrix_to_mol(gen_combined)
-                    validity = tf.convert_to_tensor(validity_reward(curr_mol), dtype=tf.float32)
-                    uniqueness = tf.convert_to_tensor(uniqueness_reward(gen_smiles_list, curr_mol), dtype=tf.float32) if validity != 0 else tf.convert_to_tensor(0, dtype=tf.float32)
-                    novelty = tf.convert_to_tensor(novelty_reward(curr_mol, train_smiles, gen_smiles_list), dtype=tf.float32) if validity != 0 else tf.convert_to_tensor(0, dtype=tf.float32)
+                    validity = tf.convert_to_tensor(validity_reward(curr_mol), dtype = tf.float32)
+                    uniqueness = tf.convert_to_tensor(uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
+                    novelty = tf.convert_to_tensor(novelty_reward(curr_mol, train_smiles, gen_smiles_list), dtype = tf.float32) 
 
-                    total_reward = validity + uniqueness + novelty
-                    r_loss = -total_reward  # Keeping it negative to maximize reward
-
-                    # Convert to Tensor
+                    total_reward = tf.convert_to_tensor(validity + uniqueness + novelty, dtype = tf.float32)
+                    r_loss = -total_reward  
                     real_r_loss = r_loss.numpy() * -1.0
-                    r_loss_list.append(real_r_loss)
-                    r_loss = tf.convert_to_tensor(r_loss, dtype=tf.float32)
-                    r_loss = tf.reshape(r_loss, [1])  # Ensure correct shape
+                    r_loss = tf.reshape(r_loss, [1])  
 
                     fake_output = discriminator(gen_adj, gen_node_features)
 

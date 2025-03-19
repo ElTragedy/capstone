@@ -4,8 +4,10 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from matrix_to_mol import adjacency_matrix_to_mol
-from rewards import validity_reward, uniqueness_reward, novelty_reward
+from rewards import validity_reward, uniqueness_reward, novelty_reward, drug_like_reward
+import warnings
 
+warnings.filterwarnings('ignore')
 tf.config.run_functions_eagerly(True)
 
 class GraphGenerator(tf.keras.Model):
@@ -94,8 +96,9 @@ class GraphGenerator(tf.keras.Model):
                     validity = tf.convert_to_tensor(validity_reward(curr_mol), dtype = tf.float32)
                     uniqueness = tf.convert_to_tensor(uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
                     novelty = tf.convert_to_tensor(novelty_reward(curr_mol, train_smiles, gen_smiles_list), dtype = tf.float32) 
+                    drug_like = tf.convert_to_tensor(drug_like_reward(curr_mol), dtype = tf.float32)
 
-                    total_reward = tf.convert_to_tensor(validity + uniqueness + novelty, dtype = tf.float32)
+                    total_reward = tf.convert_to_tensor(validity + uniqueness + novelty + drug_like, dtype = tf.float32)
                     r_loss = -total_reward  
                     real_r_loss = r_loss.numpy() * -1.0
                     r_loss = tf.reshape(r_loss, [1])  

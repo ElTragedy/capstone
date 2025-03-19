@@ -1,10 +1,12 @@
 import tensorflow as tf
 import numpy as np
 from rdkit import Chem
+from rdkit.Chem import QED
 from tensorflow.keras import optimizers
+import warnings
+warnings.filterwarnings('ignore')
 
 def validity_reward(mol):
-    print("Validity reward")
     if mol is None:
         print("Molecule is None")
         return -5 
@@ -52,3 +54,10 @@ def novelty_reward(curr_mol, train_smiles, generated_smiles):
         return -10
     else:
         return 10
+    
+def drug_like_reward(mol):
+    if validity_reward(mol):
+        drug_score = QED.qed(mol)
+        return drug_score
+    else: 
+        return -3

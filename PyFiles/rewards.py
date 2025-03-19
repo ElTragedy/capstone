@@ -4,28 +4,25 @@ from rdkit import Chem
 from tensorflow.keras import optimizers
 
 def validity_reward(mol):
+    print("Validity reward")
     if mol is None:
-      print("Molecule is None")
-      return -5
-    # Sanitize
+        print("Molecule is None")
+        return -5 
+
     try:
-      Chem.SanitizeMol(mol)
+        Chem.SanitizeMol(mol)
     except Exception:
-      print("Sanitization failed")
-      return -5
-    # Check Kekulization
-    try:
-      Chem.Kekulize(mol, clearAromaticFlags = True)
-    except Exception:
-      print("Kekulization failed")
-      return -5
-    # Check Valency
+        print("Sanitization failed")
+        return -5  
+
+    valence_score = 0
     for atom in mol.GetAtoms():
-      explicit_valence = atom.GetExplicitValence()
-      if explicit_valence > atom.GetTotalValence():
-        print("Valency failed")
-        return -5
-    return 5
+        explicit_valence = atom.GetExplicitValence()
+        max_valence = atom.GetTotalValence()
+        valence_score += max_valence - explicit_valence  
+
+    return max(0, 5 - abs(valence_score))  
+
 
 def uniqueness_reward(gen_smiles, curr_mol):
   curr_smiles = Chem.MolToSmiles(curr_mol)

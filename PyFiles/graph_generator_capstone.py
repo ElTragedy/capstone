@@ -6,6 +6,8 @@ from rdkit.Chem import AllChem
 from matrix_to_mol import adjacency_matrix_to_mol
 from rewards import validity_reward, uniqueness_reward, novelty_reward
 
+tf.config.run_functions_eagerly(True)
+
 class GraphGenerator(tf.keras.Model):
     def __init__(self, num_nodes, node_features, latent_dim):
         super().__init__()

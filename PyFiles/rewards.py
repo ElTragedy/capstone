@@ -1,8 +1,5 @@
-import tensorflow as tf
-import numpy as np
 from rdkit import Chem
 from rdkit.Chem import QED
-from tensorflow.keras import optimizers
 import warnings
 warnings.filterwarnings('ignore')
 

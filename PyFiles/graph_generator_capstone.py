@@ -65,7 +65,6 @@ class GraphGenerator(tf.keras.Model):
             for batch_idx, (real_node_features, real_adj) in enumerate(dataset):
                 z = tf.random.normal([tf.shape(real_node_features)[0], self.latent_dim])
                 gen_adj, gen_node_features = self.call(z)
-                gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_adj)))
 
                 with tf.GradientTape() as tape:
                     fake_output = discriminator.call(gen_adj, gen_node_features)
@@ -76,8 +75,8 @@ class GraphGenerator(tf.keras.Model):
                     fake_labels = tf.zeros_like(fake_output) + 0.1
 
                     # Label switching test
-                    if np.random.rand() < 0.05:
-                        real_labels, fake_labels = fake_labels, real_labels
+                    """if np.random.rand() < 0.05:
+                        real_labels, fake_labels = fake_labels, real_labels"""
 
                     d_loss = self.loss_function(real_labels, real_output) + \
                              self.loss_function(fake_labels, fake_output)
@@ -92,6 +91,7 @@ class GraphGenerator(tf.keras.Model):
                 with tf.GradientTape() as tape:
                     gen_adj, gen_node_features = self(z)
                     gen_combined = [gen_adj, gen_node_features]
+                    gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_combined)))
                     curr_mol = adjacency_matrix_to_mol(gen_combined)
                     validity = tf.convert_to_tensor(validity_reward(curr_mol), dtype = tf.float32)
                     uniqueness = tf.convert_to_tensor(uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
@@ -99,8 +99,8 @@ class GraphGenerator(tf.keras.Model):
                     drug_like = tf.convert_to_tensor(drug_like_reward(curr_mol), dtype = tf.float32)
 
                     total_reward = tf.convert_to_tensor(validity + uniqueness + novelty + drug_like, dtype = tf.float32)
-                    r_loss = -total_reward  
-                    real_r_loss = r_loss.numpy() * -1.0
+                    r_loss = total_reward  
+                    real_r_loss = r_loss.numpy()
                     r_loss = tf.reshape(r_loss, [1])  
 
                     fake_output = discriminator(gen_adj, gen_node_features)

@@ -22,7 +22,7 @@ def validity_reward(mol):
 
     return max(0, 5 - abs(valence_score))  
 
-def stray_hydros(mol):
+def stray_hydros_reward(mol):
     if mol is None:
         return -0.5
     elif any(atom.GetAtomicNum() == 1 and atom.GetDegree() == 0 for atom in mol.GetAtoms()):

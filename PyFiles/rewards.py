@@ -1,7 +1,12 @@
 from rdkit import Chem
 from rdkit.Chem import QED
+import tensorflow as tf
 import warnings
 warnings.filterwarnings('ignore')
+
+def normalize_rewards(reward):
+    mean, var = tf.nn.moments(reward, axes = [0])
+    return (reward - mean) / (tf.sqrt(var) + 1e-8)
 
 def validity_reward(mol):
     if mol is None:

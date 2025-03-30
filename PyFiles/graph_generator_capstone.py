@@ -55,6 +55,10 @@ class GraphGenerator(tf.keras.Model):
         loss_func = tf.keras.losses.BinaryCrossentropy(from_logits=False)
         return loss_func(real_output, fake_output)
 
+    def log_prob(self, z):
+        logits = self.mlp(z)
+        return tf.nn.log_softmax(logits)
+
     def fit(self, dataset, discriminator, train_smiles, epochs=10):
         d_loss_list = []
         g_loss_list = []
@@ -93,14 +97,14 @@ class GraphGenerator(tf.keras.Model):
                     gen_combined = [gen_adj, gen_node_features]
                     gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_combined)))
                     curr_mol = adjacency_matrix_to_mol(gen_combined)
-                    validity = tf.convert_to_tensor(rewards.normalize_rewards(rewards.validity_reward(curr_mol)), dtype = tf.float32)
-                    stray_h = tf.convert_to_tensor(rewards.normalize_rewards(rewards.stray_hydros_reward(curr_mol)), dtype = tf.float32)
-                    uniqueness = tf.convert_to_tensor(rewards.normalize_rewards(rewards.uniqueness_reward(gen_smiles_list, curr_mol)), dtype = tf.float32) 
-                    novelty = tf.convert_to_tensor(rewards.normalize_rewards(rewards.novelty_reward(curr_mol, train_smiles, gen_smiles_list)), dtype = tf.float32) 
-                    drug_like = tf.convert_to_tensor(rewards.normalize_rewards(rewards.drug_like_reward(curr_mol)), dtype = tf.float32)
+                    validity = tf.convert_to_tensor(rewards.validity_reward(curr_mol), dtype = tf.float32)
+                    stray_h = tf.convert_to_tensor(rewards.stray_hydros_reward(curr_mol), dtype = tf.float32)
+                    uniqueness = tf.convert_to_tensor(rewards.uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
+                    novelty = tf.convert_to_tensor(rewards.novelty_reward(curr_mol, train_smiles, gen_smiles_list), dtype = tf.float32) 
+                    drug_like = tf.convert_to_tensor(rewards.drug_like_reward(curr_mol), dtype = tf.float32)
 
                     total_reward = tf.convert_to_tensor(validity + stray_h + uniqueness + novelty + drug_like, dtype = tf.float32)
-                    alpha = 0.99  # EMA factor
+                    alpha = 0.99  
                     if hasattr(self, "reward_baseline"):
                         self.reward_baseline = alpha * self.reward_baseline + (1 - alpha) * total_reward
                     else:
@@ -114,8 +118,10 @@ class GraphGenerator(tf.keras.Model):
                     fake_output = discriminator(gen_adj, gen_node_features)
 
                     g_loss = self.loss_function(tf.ones_like(fake_output), fake_output)
-                    log_probs = self.log_prob(self(z))
-                    scaled_loss = -tf.reduce_mean(log_probs * r_loss)
+                    log_probs = self.log_prob(z)
+                    lambda_g = 1.0
+                    lambda_r = 10.0
+                    scaled_loss = lambda_g * g_loss - lambda_r * tf.reduce_mean(log_probs * r_loss)
                     g_loss_list.append(g_loss.numpy())
                     scl_loss_list.append(scaled_loss.numpy())
 

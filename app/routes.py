@@ -4,6 +4,8 @@ import subprocess  # or use your own notebook runner code
 import sys
 import rdkit.Chem as Chem
 import rdkit.Chem.AllChem as AllChem
+import requests
+from bs4 import BeautifulSoup
 
 @app.route('/')
 def index():
@@ -32,6 +34,9 @@ def get_molecule():
         # Read SMILES string from file
         with open("notebooks/molecule.smiles", "r") as file:
             smiles = file.read().strip()
+            
+        if '%23' in smiles:
+            smiles = smiles.replace('%23', '#')
 
         # Convert SMILES to 3D molecule
         mol = Chem.MolFromSmiles(smiles)
@@ -44,5 +49,39 @@ def get_molecule():
         print(mol_block)
         
         return mol_block
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/get_mol_info')
+def get_mol_info():
+    try:
+            #read from this link https://pubchem.ncbi.nlm.nih.gov/#query=[smile here]
+            #scrape the data and return it
+            
+        with open("notebooks/molecule.smiles", "r") as file:
+            smiles = file.read().strip()
+
+        print(smiles)
+        url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/' + smiles + '/property/Title,MolecularFormula/JSON'
+        print(url)
+        response = requests.get(url)
+        data = response.json()
+        print(data)
+            
+        return data
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/get_mol_creation_date')
+def get_mol_creation_date():
+    try:
+        with open("notebooks/molecule.smiles", "r") as file:
+            smiles = file.read().strip()
+
+        url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/' + smiles + '/dates/JSON'
+        response = requests.get(url)
+        data = response.json()
+            
+        return data
     except Exception as e:
         return jsonify({"error": str(e)}), 500

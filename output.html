@@ -7926,8 +7926,11 @@ Name: 1500, dtype: object
 <span class="nb">print</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
 
 <span class="c1"># Save the SMILES string to a file</span>
+<span class="n">temp</span> <span class="o">=</span> <span class="n">smiles</span>
+<span class="k">if</span> <span class="s2">"#"</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">:</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"#"</span><span class="p">,</span> <span class="s2">"%23"</span><span class="p">)</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"molecule.smiles"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
 
 <span class="n">Draw</span><span class="o">.</span><span class="n">MolToImage</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
 </pre></div>

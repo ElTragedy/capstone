@@ -20,7 +20,7 @@ class GraphDiscriminatorDiff(tf.keras.Model):
         self.fc = layers.Dense(1, activation = 'sigmoid')
 
         #optmizer for training the discriminator
-        self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.0002, beta_1=0.5)
+        self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.0002, momentum=0.5)
         
     #forward pass for discriminator; adg - adjacency matrix, node_features: node feature matrix
     def call(self, adj, node_features):

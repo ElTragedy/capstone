@@ -1,148 +1,249 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Molecule Generator</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
-  <style>
-    /* Style for the placeholder area */
-    #placeholder {
-      text-align: center;
-      margin: 20px auto;
-      padding: 20px;
-      border: 2px dashed #ccc;
-      border-radius: 10px;
-      background-color: #f9f9f9;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      color: #333;
-      max-width: 600px;
-    }
-    #placeholder img {
-      max-width: 200px;
-      display: block;
-      margin: 10px auto;
-    }
-    /* Style for the run button */
-    #runBtn {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #007BFF;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #runBtn:hover {
-      background-color: #0056b3;
-    }
-    /* Style for toggle buttons in output areas */
-    .toggle-btn {
-      margin: 5px 0;
-      padding: 5px 10px;
-      background-color: #007BFF;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #viewer canvas {
-    position: relative !important; /* Ensure it doesn't use absolute positioning */
-    display: block; /* Ensures it behaves properly */
-    margin: 20px auto; /* Centers it */
-    max-width: 100%; /* Prevents overflow */
-    }
-  </style>
-</head>
-<body>
-  <!-- Funny placeholder that takes up space before running -->
-  <div id="placeholder">
-    <h2>Welcome to the molecule thing</h2>
-    <p>We generate molecules and stuff</p>
-    <img src="https://media.giphy.com/media/26BkNrGhy4DKnbD9u/giphy.gif" alt="Dancing unicorn">
-    <p>Hit the "Run" button below to run!</p>
-  </div>
+  <head>
+    <title>Molecule Generator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+    <script src="https://unpkg.com/openchemlib@3.1.1/dist/openchemlib-full.js"></script>
+    <style>
+      /* Style for the placeholder area */
+      #placeholder {
+        text-align: center;
+        margin: 20px auto;
+        padding: 20px;
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        color: #333;
+        max-width: 600px;
+      }
+      #placeholder img {
+        max-width: 200px;
+        display: block;
+        margin: 10px auto;
+      }
+      /* Style for the run button */
+      #runBtn {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #runBtn:hover {
+        background-color: #0056b3;
+      }
+      /* Style for toggle buttons in output areas */
+      .toggle-btn {
+        margin: 5px 0;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #viewer canvas {
+        position: relative !important; /* Ensure it doesn't use absolute positioning */
+        display: block; /* Ensures it behaves properly */
+        margin: 20px auto; /* Centers it */
+        max-width: 100%; /* Prevents overflow */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Funny placeholder that takes up space before running -->
+    <div id="placeholder">
+      <h2>Welcome to the molecule thing</h2>
+      <p>We generate molecules and stuff</p>
+      <img
+        src="https://media.giphy.com/media/26BkNrGhy4DKnbD9u/giphy.gif"
+        alt="Dancing unicorn"
+      />
+      <p>Hit the "Run" button below to run!</p>
+    </div>
 
-  <!-- Run button to trigger the notebook execution -->
-  <button id="runBtn">Run</button>
+    <!-- Run button to trigger the notebook execution -->
+    <button id="runBtn">Run</button>
 
-  <!-- Container for the notebook output -->
-  <div id="notebook-output">
-    <!-- This content will be replaced by the notebook output (output.html) -->
-  </div>
-  <!-- Container for the molecule viewer (placed after notebook output) -->
-  <div id="viewer-container">
-  <!-- This content will be replaced by the molecule viewer -->
-  </div>
+    <div id="mol-Title">
+      <!-- This content will be replaced by the molecule title -->
+    </div>
 
+    <!-- Container for the notebook output -->
+    <div id="notebook-output">
+      <!-- This content will be replaced by the notebook output (output.html) -->
+    </div>
 
+    <button onclick="switchView('3d')">Show 3D</button>
+    <button onclick="switchView('2d')">Show 2D</button>
 
-  <script>
-    $(document).ready(function(){
-      // When the Run button is clicked
-      $("#runBtn").click(function(){
-        // Hide the funny placeholder
-        $("#placeholder").fadeOut();
+    <!-- Container for the molecule viewer (placed after notebook output) -->
+    <div id="viewer-container"></div>
+    <div id="mol-info">
+      <!-- This content will be replaced by the molecule info -->
+    </div>
+    <div id="mol-date">
+      <!-- This content will be replaced by the molecule date -->
+    </div>
 
-        // Send the POST request to run the notebook and get its output
-        $.ajax({
-          url: '/run_notebook',
-          type: 'POST',
-          success: function(response) {
-            if(response.output) {
-              $("#notebook-output").html(response.output);
-              // Optionally add toggle functionality for non-image outputs here
-              $("#notebook-output .jp-OutputArea").each(function(){
-                var $outputArea = $(this);
-                if ($outputArea.find(".jp-RenderedImage").length === 0) {
-                  var $btn = $("<button class='toggle-btn'>Show/Hide Output</button>");
-                  $outputArea.hide();
-                  $outputArea.before($btn);
-                  $btn.click(function(){
-                    $outputArea.toggle();
-                  });
-                }
-              });
-            } else {
-              $("#notebook-output").html('No output received.');
-            }
-      fetchAndRenderMolecule();
-          },
-          error: function(err) {
-            $("#notebook-output").html('Error: ' + err.responseText);
-          }
+    <script>
+      $(document).ready(function () {
+        $("#runBtn").click(function () {
+          $("#placeholder").fadeOut(); // Hide the placeholder
 
+          $.ajax({
+            url: "/run_notebook",
+            type: "POST",
+            success: function () {
+              fetchAndRenderMolecule();
+              switchView("3d"); // Default to 3D view
+              fetchMolInfo();
+              fetchMolDate();
+            },
+            error: function (err) {
+              $("#notebook-output").html("Error: " + err.responseText);
+            },
+          });
         });
+
+        function fetchAndRenderMolecule() {
+          fetch("/get_molecule")
+            .then((response) => response.text())
+            .then((mol) => {
+              if (!mol) {
+                console.error("No molecule data received.");
+                return;
+              }
+
+              console.log("MOL received:", mol);
+
+              // Prepare the container
+              $("#viewer-container").html(`
+                              <div id="viewer" style="width: 800px; height: 400px;"></div>
+                              <canvas id="viewer2d"></canvas>
+                          `);
+
+              mol = decodeURIComponent(mol); // Decode the molecule data
+              console.log("Decoded MOL:", mol);
+
+              // You can choose to load either 3D or 2D based on your initial preference
+              load3DStructure(mol); // Default to 3D, for example
+              load2DStructure(mol); // Load 2D structure as well
+
+              // Initially show 3D or 2D based on your preference
+              switchView("3d"); // Set to 3D initially (you could set to "2d" if needed)
+            })
+            .catch((error) => console.error("Error fetching molecule:", error));
+        }
+
+        function load3DStructure(mol) {
+          var viewer = $3Dmol.createViewer($("#viewer"), {
+            backgroundColor: "white",
+          });
+          viewer.addModel(mol, "mol");
+          viewer.setStyle({}, { stick: {} });
+          viewer.zoomTo();
+          viewer.render();
+        }
+
+        function load2DStructure(mol) {
+          let canvas = document.getElementById("viewer2d");
+          let ctx = canvas.getContext("2d");
+          $("#viewer2d").hide();
+
+
+
+          // Fetch the 2D image from the local backend
+          fetch("/get_mol_image")
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Failed to fetch image");
+              }
+              return response.blob();
+            })
+            .then((blob) => {
+              // Create an image element
+              let img = new Image();
+              img.onload = function () {
+                // Set canvas dimensions to match image size
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                // Clear previous content and draw the new image at original size
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous image
+                ctx.drawImage(img, 0, 0); // Draw the image at its natural size
+              };
+              img.src = URL.createObjectURL(blob); // Set the image source to the blob
+            })
+            .catch((error) =>
+              console.error("Error loading 2D structure:", error)
+            );
+        }
+
+        function fetchMolInfo() {
+          fetch("/get_mol_info")
+            .then((response) => response.json())
+            .then((data) => {
+              if (!data?.PropertyTable?.Properties?.length) return;
+
+              console.log("Molecule info received:", data);
+              const molecule = data.PropertyTable.Properties[0];
+
+              $("#mol-title").html(`<h1>${molecule.Title}</h1>`);
+              $("#mol-info").html(`
+                              <h2>Molecule Information</h2>
+                              <p><strong>CID:</strong> ${molecule.CID}</p>
+                              <p><strong>Molecular Formula:</strong> ${molecule.MolecularFormula}</p>
+                          `);
+            })
+            .catch((error) =>
+              console.error("Error fetching molecule info:", error)
+            );
+        }
+
+        function fetchMolDate() {
+          fetch("/get_mol_creation_date")
+            .then((response) => response.json())
+            .then((data) => {
+              let moleculeDate =
+                data?.InformationList?.Information?.[0]?.CreationDate;
+              if (!moleculeDate) {
+                console.error("Invalid data structure:", data);
+                return;
+              }
+
+              let formattedDate = `${moleculeDate.Year}-${String(
+                moleculeDate.Month
+              ).padStart(2, "0")}-${String(moleculeDate.Day).padStart(2, "0")}`;
+
+              $("#mol-date").html(`
+                              <h2>Creation Date</h2>
+                              <p><strong>Date:</strong> ${formattedDate}</p>
+                          `);
+              console.log("Formatted date:", formattedDate);
+            })
+            .catch((error) =>
+              console.error("Error fetching molecule date:", error)
+            );
+        }
       });
 
-      function fetchAndRenderMolecule() {
-        fetch('/get_molecule')
-          .then(response => response.text())
-          .then(mol => {
-            if (mol) {
-              console.log("MOL received:", mol);
-  
-              // Create a new viewer div dynamically
-              $("#viewer-container").html('<div id="viewer" style="width: 800px; height: 400px;"></div>');
-  
-              // Initialize 3Dmol viewer
-              var viewer = $3Dmol.createViewer($("#viewer"), { backgroundColor: "white" });
-              // Load MOL structure
-              viewer.addModel(mol, "mol");
-  
-              // Set style and render
-              viewer.setStyle({}, { stick: {} });
-              viewer.zoomTo();
-              viewer.render();
-            } else {
-              console.error("No molecule data received.");
-            }
-          })
-          .catch(error => console.error("Error fetching molecule:", error));
+      // Move this function outside of $(document).ready() to make it globally accessible
+      function switchView(mode) {
+        if (mode === "3d") {
+          $("#viewer").show();
+          $("#viewer2d").hide();
+        } else {
+          $("#viewer").hide();
+          $("#viewer2d").show();
+        }
       }
-  });
-
-  </script>
-</body>
+    </script>
+  </body>
 </html>

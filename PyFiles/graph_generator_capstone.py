@@ -4,7 +4,7 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from matrix_to_mol import adjacency_matrix_to_mol
-from rewards import validity_reward, uniqueness_reward, novelty_reward, drug_like_reward
+import rewards
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -55,6 +55,10 @@ class GraphGenerator(tf.keras.Model):
         loss_func = tf.keras.losses.BinaryCrossentropy(from_logits=False)
         return loss_func(real_output, fake_output)
 
+    def log_prob(self, z):
+        logits = self.mlp(z)
+        return tf.nn.log_softmax(logits)
+
     def fit(self, dataset, discriminator, train_smiles, epochs=10):
         d_loss_list = []
         g_loss_list = []
@@ -65,7 +69,6 @@ class GraphGenerator(tf.keras.Model):
             for batch_idx, (real_node_features, real_adj) in enumerate(dataset):
                 z = tf.random.normal([tf.shape(real_node_features)[0], self.latent_dim])
                 gen_adj, gen_node_features = self.call(z)
-                gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_adj)))
 
                 with tf.GradientTape() as tape:
                     fake_output = discriminator.call(gen_adj, gen_node_features)
@@ -76,8 +79,8 @@ class GraphGenerator(tf.keras.Model):
                     fake_labels = tf.zeros_like(fake_output) + 0.1
 
                     # Label switching test
-                    if np.random.rand() < 0.05:
-                        real_labels, fake_labels = fake_labels, real_labels
+                    """if np.random.rand() < 0.05:
+                        real_labels, fake_labels = fake_labels, real_labels"""
 
                     d_loss = self.loss_function(real_labels, real_output) + \
                              self.loss_function(fake_labels, fake_output)
@@ -92,24 +95,35 @@ class GraphGenerator(tf.keras.Model):
                 with tf.GradientTape() as tape:
                     gen_adj, gen_node_features = self(z)
                     gen_combined = [gen_adj, gen_node_features]
+                    gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_combined)))
                     curr_mol = adjacency_matrix_to_mol(gen_combined)
-                    validity = tf.convert_to_tensor(validity_reward(curr_mol), dtype = tf.float32)
-                    uniqueness = tf.convert_to_tensor(uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
-                    novelty = tf.convert_to_tensor(novelty_reward(curr_mol, train_smiles, gen_smiles_list), dtype = tf.float32) 
-                    drug_like = tf.convert_to_tensor(drug_like_reward(curr_mol), dtype = tf.float32)
+                    validity = tf.convert_to_tensor(rewards.validity_reward(curr_mol), dtype = tf.float32)
+                    stray_h = tf.convert_to_tensor(rewards.stray_hydros_reward(curr_mol), dtype = tf.float32)
+                    uniqueness = tf.convert_to_tensor(rewards.uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
+                    novelty = tf.convert_to_tensor(rewards.novelty_reward(curr_mol, train_smiles, gen_smiles_list), dtype = tf.float32) 
+                    drug_like = tf.convert_to_tensor(rewards.drug_like_reward(curr_mol), dtype = tf.float32)
 
-                    total_reward = tf.convert_to_tensor(validity + uniqueness + novelty + drug_like, dtype = tf.float32)
-                    r_loss = -total_reward  
-                    real_r_loss = r_loss.numpy() * -1.0
+                    total_reward = tf.convert_to_tensor(validity + stray_h + uniqueness + novelty + drug_like, dtype = tf.float32)
+                    alpha = 0.99  
+                    if hasattr(self, "reward_baseline"):
+                        self.reward_baseline = alpha * self.reward_baseline + (1 - alpha) * total_reward
+                    else:
+                        self.reward_baseline = total_reward
+
+                    advantage = total_reward - self.reward_baseline
+                    r_loss = tf.convert_to_tensor(advantage, dtype=tf.float32)
+                    real_r_loss = r_loss.numpy()
                     r_loss = tf.reshape(r_loss, [1])  
 
                     fake_output = discriminator(gen_adj, gen_node_features)
 
                     g_loss = self.loss_function(tf.ones_like(fake_output), fake_output)
-                    scaled_loss = g_loss * tf.exp(-r_loss)
-                    real_scaled_loss = g_loss.numpy() * np.exp(real_r_loss)
+                    log_probs = self.log_prob(z)
+                    lambda_g = 1.0
+                    lambda_r = 10.0
+                    scaled_loss = lambda_g * g_loss - lambda_r * tf.reduce_mean(log_probs * r_loss)
                     g_loss_list.append(g_loss.numpy())
-                    scl_loss_list.append(real_scaled_loss)
+                    scl_loss_list.append(scaled_loss.numpy())
 
                     gradients = tape.gradient(scaled_loss, self.trainable_variables)
                     self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
@@ -119,6 +133,6 @@ class GraphGenerator(tf.keras.Model):
                             f"D Loss: {d_loss.numpy():.4f}",
                             f"G Loss: {g_loss.numpy():.4f}", 
                             f"R Loss: {real_r_loss:.4f}", 
-                            f"Scaled Loss: {real_scaled_loss:.4f}")
+                            f"Scaled Loss: {scaled_loss.numpy():.4f}")
 
         return d_loss_list, g_loss_list, r_loss_list, scl_loss_list

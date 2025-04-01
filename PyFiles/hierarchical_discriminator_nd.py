@@ -11,8 +11,6 @@ class GraphDiscriminatorDiff(tf.keras.Model):
         self.conv1 = layers.Dense(64, activation = 'relu')
         self.conv2 = layers.Dense(128, activation = 'relu')
 
-        self.pool = layers.GlobalAveragePooling1D()
-
         self.fc = layers.Dense(1, activation = 'sigmoid')
 
         self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.0002, momentum=0.5)    
@@ -20,7 +18,6 @@ class GraphDiscriminatorDiff(tf.keras.Model):
     def call(self, adj, node_features):
         x = self.conv1(node_features)
         x = self.conv2(x)
-        x = self.pool(x)
         output = self.fc(x)
 
         return output 

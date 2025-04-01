@@ -1,10 +1,10 @@
 import tensorflow as tf
-from keras import layers, models
+from keras import layers
 
 #base graph discriminator without pooling
-class GraphDiscriminator(tf.keras.Model):
+class GraphDiscriminatorDiff(tf.keras.Model):
     def __init__(self, num_nodes, node_features):
-        super(GraphDiscriminator, self).__init__()
+        super().__init__()
 
         self.num_nodes = num_nodes
         self.node_features = node_features
@@ -20,7 +20,7 @@ class GraphDiscriminator(tf.keras.Model):
         self.fc = layers.Dense(1, activation = 'sigmoid')
 
         #optmizer for training the discriminator
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
+        self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.0002, beta_1=0.5)
         
     #forward pass for discriminator; adg - adjacency matrix, node_features: node feature matrix
     def call(self, adj, node_features):

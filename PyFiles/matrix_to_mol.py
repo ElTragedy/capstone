@@ -9,7 +9,7 @@ def adjacency_matrix_to_mol(adj, nodes):
   atom_map = {i: mol.AddAtom(Chem.Atom(int(atom_types[i]))) for i in range(len(atom_types))}
 
   if isinstance(matrix, tf.Tensor):
-        matrix = matrix.numpy()
+      matrix = matrix.numpy()
   if isinstance(atom_types, tf.Tensor):
       atom_types = atom_types.numpy()
 

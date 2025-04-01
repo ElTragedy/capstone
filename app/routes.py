@@ -9,12 +9,39 @@ from bs4 import BeautifulSoup
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Dummy leaderboard data (top 3)
+    top_3 = [
+        {
+            'rank': 1,
+            'user': 'Alice',
+            'validity': '95%',
+            'uniqueness': '90%',
+            'novelty': '85%',
+            'property_score': 92
+        },
+        {
+            'rank': 2,
+            'user': 'Bob',
+            'validity': '93%',
+            'uniqueness': '88%',
+            'novelty': '82%',
+            'property_score': 89
+        },
+        {
+            'rank': 3,
+            'user': 'Charlie',
+            'validity': '90%',
+            'uniqueness': '85%',
+            'novelty': '80%',
+            'property_score': 87
+        }
+    ]
+    return render_template('index.html', top_3=top_3)
 
 @app.route('/run_notebook', methods=['POST'])
 def run_notebook():
     try:
-        # Example using nbconvert to run and convert your notebook to HTML:
+        # Run nbconvert to generate output.html from the notebook
         subprocess.check_call([
             sys.executable, '-m', 'nbconvert',
             '--to', 'html',
@@ -24,9 +51,15 @@ def run_notebook():
         ])
         with open('output.html', 'r') as f:
             output = f.read()
-        return jsonify({'output': output})
+
+        # Use BeautifulSoup to extract only the body content
+        soup = BeautifulSoup(output, "html.parser")
+        body_content = soup.body.decode_contents()
+
+        return jsonify({'output': body_content})
     except subprocess.CalledProcessError as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/get_molecule')
 def get_molecule():
@@ -85,3 +118,7 @@ def get_mol_creation_date():
         return data
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/leaderboard')
+def leaderboard():
+    return render_template('leaderboard.html')

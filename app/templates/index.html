@@ -1,244 +1,199 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Molecule Generator</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
-    <style>
-      /* Style for the placeholder area */
-      #placeholder {
-        text-align: center;
-        margin: 20px auto;
-        padding: 20px;
-        border: 2px dashed #ccc;
-        border-radius: 10px;
-        background-color: #f9f9f9;
-        font-family: "Comic Sans MS", cursive, sans-serif;
-        color: #333;
-        max-width: 600px;
-      }
-      #placeholder img {
-        max-width: 200px;
-        display: block;
-        margin: 10px auto;
-      }
-      /* Style for the run button */
-      #runBtn {
-        display: block;
-        margin: 20px auto;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-      #runBtn:hover {
-        background-color: #0056b3;
-      }
-      /* Style for toggle buttons in output areas */
-      .toggle-btn {
-        margin: 5px 0;
-        padding: 5px 10px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      #viewer canvas {
-        position: relative !important; /* Ensure it doesn't use absolute positioning */
-        display: block; /* Ensures it behaves properly */
-        margin: 20px auto; /* Centers it */
-        max-width: 100%; /* Prevents overflow */
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Funny placeholder that takes up space before running -->
-    <div id="placeholder">
-      <h2>Welcome to the molecule thing</h2>
-      <p>We generate molecules and stuff</p>
-      <img
-        src="https://media.giphy.com/media/26BkNrGhy4DKnbD9u/giphy.gif"
-        alt="Dancing unicorn"
-      />
-      <p>Hit the "Run" button below to run!</p>
-    </div>
+{% extends "base.html" %}
+{% block title %}Home - Molecule Generator{% endblock %}
+{% block extra_styles %}
+<style>
+  #notebook-output {
+    margin-top: 2rem;
+  }
+  #notebook-output .jp-Cell {
+    background: #fff;
+    border: 1px solid #dee2e6; 
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+  #notebook-output .jp-OutputArea-output {
+    background: #f8f9fa; 
+    border: 1px dashed #ccc;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-top: 0.5rem;
+  }
+  .toggle-btn {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+  #notebook-output img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1rem 0;
+  }
+  #notebook-output pre {
+    background: #f0f0f0;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+  }
+  #notebook-output {
+    font-size: 0.95rem; 
+    line-height: 1.5;
+  }
+</style>
+{% endblock %}
+{% block content %}
 
-    <!-- Run button to trigger the notebook execution -->
-    <button id="runBtn">Run</button>
+  <div class="text-center">
+    <button id="runBtn" class="btn btn-primary">Run</button>
+  </div>
 
-    <!-- Container for the notebook output -->
-    <div id="notebook-output">
-      <!-- This content will be replaced by the notebook output (output.html) -->
+  <div id="loadingSpinner" class="text-center my-4" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
-    <!-- Container for the molecule viewer (placed after notebook output) -->
-    <div id="viewer-container">
-      <!-- This content will be replaced by the molecule viewer -->
-    </div>
-    <div id="mol-info">
-      <!-- This content will be replaced by the molecule info -->
-    </div>
-    <div id="mol-date">
-      <!-- This content will be replaced by the molecule date -->
-    </div>
+    <p>Generating molecules, please wait...</p>
+  </div>
+  <div class="my-4">
+    <h3>Top 3 Leaderboard Preview</h3>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>User</th>
+          <th>Validity</th>
+          <th>Uniqueness</th>
+          <th>Novelty</th>
+          <th>Property Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in top_3 %}
+        <tr>
+          <td>{{ item.rank }}</td>
+          <td>{{ item.user }}</td>
+          <td>{{ item.validity }}</td>
+          <td>{{ item.uniqueness }}</td>
+          <td>{{ item.novelty }}</td>
+          <td>{{ item.property_score }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-    <script>
-      $(document).ready(function () {
-        // When the Run button is clicked
-        $("#runBtn").click(function () {
-          // Hide the funny placeholder
-          $("#placeholder").fadeOut();
+  <!-- Notebook Output Area -->
+  <div id="notebook-output" class="output-area"></div>
 
-          // Send the POST request to run the notebook and get its output
-          $.ajax({
-            url: "/run_notebook",
-            type: "POST",
-            success: function (response) {
-              if (response.output) {
-                $("#notebook-output").html(response.output);
-                // Optionally add toggle functionality for non-image outputs here
-                $("#notebook-output .jp-OutputArea").each(function () {
-                  var $outputArea = $(this);
-                  if ($outputArea.find(".jp-RenderedImage").length === 0) {
-                    var $btn = $(
-                      "<button class='toggle-btn'>Show/Hide Output</button>"
-                    );
-                    $outputArea.hide();
-                    $outputArea.before($btn);
-                    $btn.click(function () {
-                      $outputArea.toggle();
-                    });
-                  }
+  <!-- 3D Viewer -->
+  <div id="viewer-container" class="my-4"></div>
+
+  <!-- Molecule Info -->
+  <div id="mol-info" class="my-4"></div>
+  <div id="mol-date" class="my-4"></div>
+
+  <!-- "Submit Name" Section (appears after molecule generation) -->
+  <div id="user-name-section" class="my-4" style="display: none;">
+    <h4>Submit Your Name to Leaderboard</h4>
+    <p>Once you've generated a molecule, enter your name below (functionality not yet implemented).</p>
+    <div class="input-group" style="max-width: 400px;">
+      <input type="text" class="form-control" placeholder="Enter your name...">
+      <div class="input-group-append">
+        <button class="btn btn-success" type="button">Submit</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#runBtn").click(function () {
+      $("#placeholder").fadeOut();
+      $("#loadingSpinner").show();
+
+      $.ajax({
+        url: "/run_notebook",
+        type: "POST",
+        success: function (response) {
+          $("#loadingSpinner").hide();
+
+          if (response.output) {
+            $("#notebook-output").html(response.output);
+            // Toggle for non-image outputs
+            $("#notebook-output .jp-OutputArea").each(function () {
+              var $outputArea = $(this);
+              if ($outputArea.find(".jp-RenderedImage").length === 0) {
+                var $btn = $("<button class='toggle-btn btn btn-secondary btn-sm my-2'>Show/Hide Output</button>");
+                $outputArea.hide();
+                $outputArea.before($btn);
+                $btn.click(function () {
+                  $outputArea.toggle();
                 });
-              } else {
-                $("#notebook-output").html("No output received.");
               }
-              fetchAndRenderMolecule();
-              fetchMolInfo();
-              fetchMolDate();
-            },
-            error: function (err) {
-              $("#notebook-output").html("Error: " + err.responseText);
-            },
-          });
-        });
+            });
+          } else {
+            $("#notebook-output").html("No output received.");
+          }
 
-        function fetchAndRenderMolecule() {
-          fetch("/get_molecule")
-            .then((response) => response.text())
-            .then((mol) => {
-              if (mol) {
-                console.log("MOL received:", mol);
+          // 3D viewer + info
+          fetchAndRenderMolecule();
+          fetchMolInfo();
+          fetchMolDate();
 
-                // Create a new viewer div dynamically
-                $("#viewer-container").html(
-                  '<div id="viewer" style="width: 800px; height: 400px;"></div>'
-                );
-
-                // Initialize 3Dmol viewer
-                var viewer = $3Dmol.createViewer($("#viewer"), {
-                  backgroundColor: "white",
-                });
-                // Load MOL structure
-                viewer.addModel(mol, "mol");
-
-                // Set style and render
-                viewer.setStyle({}, { stick: {} });
-                viewer.zoomTo();
-                viewer.render();
-              } else {
-                console.error("No molecule data received.");
-              }
-            })
-            .catch((error) => console.error("Error fetching molecule:", error));
-        }
-
-        function fetchMolInfo() {
-          fetch("/get_mol_info")
-            .then((response) => response.json())
-            .then((data) => {
-              if (
-                data &&
-                data.PropertyTable &&
-                data.PropertyTable.Properties &&
-                data.PropertyTable.Properties.length > 0
-              ) {
-                console.log("Molecule info received:", data);
-
-                // Create a new viewer div dynamically (resetting previous content)
-                $("#mol-info").html(
-                  '<div id="mol-info" style="width: 800px; height: 400px;"></div>'
-                );
-
-                // Using the information retrieved from the server to display the molecule information
-                $("#mol-info").html("<h2>Molecule Information</h2>");
-
-                // Retrieve the first property (assuming only one property object in the list)
-                const molecule = data.PropertyTable.Properties[0];
-
-                // Display the details
-                $("#mol-info").append(
-                  "<p><strong>Title:</strong> " + molecule.Title + "</p>"
-                );
-                $("#mol-info").append(
-                  "<p><strong>CID:</strong> " + molecule.CID + "</p>"
-                );
-                $("#mol-info").append(
-                  "<p><strong>Molecular Formula:</strong> " +
-                    molecule.MolecularFormula +
-                    "</p>"
-                );
-              }
-            })
-            .catch((error) =>
-              console.error("Error fetching molecule info:", error)
-            );
-        }
-
-        function fetchMolDate() {
-          fetch("/get_mol_creation_date")
-            .then((response) => response.json())
-            .then((data) => {
-              if (
-                data &&
-                data.InformationList &&
-                data.InformationList.Information
-              ) {
-                console.log(
-                  "Molecule date received:",
-                  data.InformationList.Information[0].CreationDate
-                );
-
-                let moleculeDate =
-                  data.InformationList.Information[0].CreationDate;
-
-                // Format the date properly (YYYY-MM-DD)
-                let formattedDate = `${moleculeDate.Year}-${String(
-                  moleculeDate.Month
-                ).padStart(2, "0")}-${String(moleculeDate.Day).padStart(
-                  2,
-                  "0"
-                )}`;
-
-                $("#mol-date").html("<h2>Creation Date</h2>");
-
-                // Display the date
-                $("#mol-date").append(
-                  `<p><strong>Date:</strong> ${formattedDate}</p>`
-                );
-                console.log("Formatted date:", formattedDate);
-              } else {
-                console.error("Invalid data structure:", data);
-              }
-            })
-            .catch((error) =>
-              console.error("Error fetching molecule date:", error)
-            );
-        }
+          // Show the "Submit Name" section
+          $("#user-name-section").show();
+        },
+        error: function (err) {
+          $("#loadingSpinner").hide();
+          $("#notebook-output").html("Error: " + err.responseText);
+        },
       });
-    </script>
-  </body>
-</html>
+    });
+
+    function fetchAndRenderMolecule() {
+      fetch("/get_molecule")
+        .then((response) => response.text())
+        .then((mol) => {
+          if (mol) {
+            $("#viewer-container").html('<div id="viewer" style="position: relative; width: 800px; height: 400px; margin: 0 auto;"></div>');
+            var viewer = $3Dmol.createViewer($("#viewer"), { backgroundColor: "white" });
+            viewer.addModel(mol, "mol");
+            viewer.setStyle({}, { stick: {} });
+            viewer.zoomTo();
+            viewer.render();
+          }
+        })
+        .catch((error) => console.error("Error fetching molecule:", error));
+    }
+
+    function fetchMolInfo() {
+      fetch("/get_mol_info")
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data.PropertyTable && data.PropertyTable.Properties && data.PropertyTable.Properties.length > 0) {
+            $("#mol-info").html("<h2>Molecule Information</h2>");
+            const molecule = data.PropertyTable.Properties[0];
+            $("#mol-info").append("<p><strong>Title:</strong> " + molecule.Title + "</p>");
+            $("#mol-info").append("<p><strong>CID:</strong> " + molecule.CID + "</p>");
+            $("#mol-info").append("<p><strong>Molecular Formula:</strong> " + molecule.MolecularFormula + "</p>");
+          }
+        })
+        .catch((error) => console.error("Error fetching molecule info:", error));
+    }
+
+    function fetchMolDate() {
+      fetch("/get_mol_creation_date")
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data.InformationList && data.InformationList.Information) {
+            let moleculeDate = data.InformationList.Information[0].CreationDate;
+            let formattedDate = `${moleculeDate.Year}-${String(moleculeDate.Month).padStart(2, "0")}-${String(moleculeDate.Day).padStart(2, "0")}`;
+            $("#mol-date").html("<h2>Creation Date</h2>");
+            $("#mol-date").append(`<p><strong>Date:</strong> ${formattedDate}</p>`);
+          }
+        })
+        .catch((error) => console.error("Error fetching molecule date:", error));
+    }
+  });
+</script>
+{% endblock %}

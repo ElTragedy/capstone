@@ -10,11 +10,12 @@ class GraphDiscriminator(tf.keras.Model):
         self.mlp = models.Sequential([
             layers.Dense(256, input_shape = (self.input_dim + self.condition_dim,), activation='leaky_relu'),
             layers.Dense(128, activation='leaky_relu'),
-            layers.BatchNormalization(),
+            #layers.BatchNormalization(),
             layers.Dense(1, activation='sigmoid')
         ])
 
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
+        self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.000099, momentum=0.5)
+
 
     def call(self, adj, node_features):
         batch_size = tf.shape(adj)[0]

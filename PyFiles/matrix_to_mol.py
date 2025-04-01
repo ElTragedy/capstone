@@ -2,10 +2,10 @@ import tensorflow as tf
 import numpy as np
 from rdkit import Chem
 
-def adjacency_matrix_to_mol(inp_matrix):
+def adjacency_matrix_to_mol(adj, nodes):
   mol = Chem.RWMol()
-  atom_types = np.unique(inp_matrix[1])
-  matrix = inp_matrix[0]
+  atom_types = np.unique(nodes)
+  matrix = adj
   atom_map = {i: mol.AddAtom(Chem.Atom(int(atom_types[i]))) for i in range(len(atom_types))}
 
   if isinstance(matrix, tf.Tensor):
@@ -14,7 +14,7 @@ def adjacency_matrix_to_mol(inp_matrix):
       atom_types = atom_types.numpy()
 
   matrix = np.array(matrix)
-  atoms = np.array(inp_matrix[1])
+  atoms = np.array(nodes)
   atom_types = np.array(atom_types)
 
   if len(matrix) != len(atoms):

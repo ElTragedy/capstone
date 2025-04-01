@@ -1,7 +1,7 @@
 import tensorflow as tf
 from keras import layers
 
-class GraphDiscriminatorDiff(tf.keras.Model):
+class GraphDiscriminatorNoDiff(tf.keras.Model):
     def __init__(self, num_nodes, node_features):
         super().__init__()
 

@@ -94,9 +94,8 @@ class GraphGenerator(tf.keras.Model):
 
                 with tf.GradientTape() as tape:
                     gen_adj, gen_node_features = self(z)
-                    gen_combined = [gen_adj, gen_node_features]
-                    gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_combined)))
-                    curr_mol = adjacency_matrix_to_mol(gen_combined)
+                    gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_adj, gen_node_features)))
+                    curr_mol = adjacency_matrix_to_mol(gen_adj, gen_node_features)
                     validity = tf.convert_to_tensor(rewards.validity_reward(curr_mol), dtype = tf.float32)
                     stray_h = tf.convert_to_tensor(rewards.stray_hydros_reward(curr_mol), dtype = tf.float32)
                     uniqueness = tf.convert_to_tensor(rewards.uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 

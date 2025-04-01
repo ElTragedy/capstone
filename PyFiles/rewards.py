@@ -61,7 +61,7 @@ def novelty_reward(curr_mol, train_smiles, generated_smiles):
         return 1
     
 def drug_like_reward(mol):
-    if validity_reward(mol):
+    if validity_reward(mol) > 0:
         drug_score = QED.qed(mol)
         return drug_score
     else: 

@@ -11,6 +11,7 @@ def validity_reward(mol):
 
     try:
         Chem.SanitizeMol(mol)
+        mol = Chem.RemoveHs(mol)
     except Exception:
         print("Sanitization failed")
         return -0.5

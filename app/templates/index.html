@@ -2,20 +2,24 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Showcase - Personal Portfolio One Page Bulma Theme</title>
   <!-- Bulma Version 1-->
-  <link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/showcase.css') }}" />
-  <script src="{{ url_for('static', filename='js/showcase.js') }}"></script>
+  <link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/showcase.css">
+  <script src="/static/js/showcase.js"></script>
   <script src="https://kit.fontawesome.com/2828f7885a.js"
-    integrity="sha384-WAsFbnLEQcpCk8lM1UTWesAf5rGTCvb2Y+8LvyjAAcxK1c3s5c0L+SYOgxvc6PWG" crossorigin="anonymous"></script>
-  <link rel="icon" type="image/png" href="favicon.png" />
+    integrity="sha384-WAsFbnLEQcpCk8lM1UTWesAf5rGTCvb2Y+8LvyjAAcxK1c3s5c0L+SYOgxvc6PWG"
+    crossorigin="anonymous"></script>
+  <link rel="icon" type="image/png" href="favicon.png">
 </head>
 
-<body>
+<body data-aos-easing="ease-out" data-aos-duration="800" data-aos-delay="0">
+  <!-- Begin Preloader -->
+
+  <!-- End Preloader-->
   <!-- Begin Scroll Up Button -->
 
   <form action="#home">
@@ -79,9 +83,9 @@
       <!-- Begin Hero Content-->
       <div class="hero-body">
         <div class="container has-text-centered">
-          <h1 class="subtitle">Hey there, I'm</h1>
-          <h2 class="title">Ashley</h2>
-          <h1 class="subtitle profession">A UI/UX Designer</h1>
+          <h1 class="subtitle">Rivas Molecules</h1>
+          <h2 class="title">GAN Molecule Generation</h2>
+          <h1 class="subtitle profession">A capstone project to create new molecules</h1>
         </div>
       </div>
       <!-- End Hero Content-->
@@ -95,19 +99,19 @@
                   <a href="#home">Home</a>
                 </li>
                 <li>
-                  <a href="#about-me">About Me</a>
+                  <a href="#our-site">Our Site</a>
                 </li>
                 <li>
-                  <a href="#services">Services</a>
+                  <a href="#gan">GAN?</a>
                 </li>
                 <li>
-                  <a href="#skills">Skills</a>
+                  <a href="#how-it-works">How it works</a>
                 </li>
                 <li>
-                  <a href="#my-work">My Work</a>
+                  <a href="#influence-generation">Influence Generation</a>
                 </li>
                 <li>
-                  <a href="#contact">Contact</a>
+                  <a href="#generate">generate</a>
                 </li>
               </ul>
             </div>
@@ -122,192 +126,149 @@
 
   <!-- Begin Main Content -->
   <div class="main-content">
-    <!-- Begin About Me Section -->
-    <div class="section-light about-me" id="about-me">
+    <!-- Begin Our Site Section -->
+    <div class="section-light our-site" id="our-site">
       <div class="container">
         <div class="column is-12 about-me">
-          <h1 class="title has-text-centered section-title">About Me</h1>
+          <h1 class="title has-text-centered section-title">Our Site</h1>
         </div>
         <div class="columns is-multiline">
-          <div class="column is-6 has-vertically-aligned-content" data-aos="fade-right">
+          <div class="column is-6 has-vertically-aligned-content aos-init aos-animate" data-aos="fade-right">
             <p class="is-larger">
-              &emsp;&emsp;<strong>Showcase is a modern, beautiful personal website template to
-                showcase who you are, as well as projects you've worked on in
-                the past.</strong>
+                <strong>
+                This is a site that we created in our capstone to demonstrate
+                a GAN model we built and its ability to generate molecules in
+                Spring of 2025!
+              </strong>
             </p>
-            <br />
+            <br>
             <p>
-              Showcase was built from the ground up with Bulma to be fast and
-              responsive out of the box with all source files well documented
-              for easy to customization. The Showcase template gives you a
-              personal space to share what you are all about as a creative
-              designer, developer, photographer, and more!
+              Big thank you to the contributors that made this possible:
+              Dr. Fendt, Dr. Rivas, Kaleb Ray, Seth Kacura, Ethan Triem,
+              Aaron Sierra, David Day, Cheyenne Garza.
             </p>
-            <br />
+            <br>
             <div class="is-divider"></div>
-            <div class="columns about-links">
-              <div class="column">
-                <p class="heading">
-                  <strong>Give me a ring</strong>
-                </p>
-                <p class="subheading">
-                  123-456-7890
-                </p>
-              </div>
-              <div class="column">
-                <p class="heading">
-                  <strong>Email Me</strong>
-                </p>
-                <p class="subheading">
-                  hello@example.com
-                </p>
-              </div>
-              <div class="column">
-                <p class="heading">
-                  <strong>View my portfolio</strong>
-                </p>
-                <p class="subheading">
-                  example.com
-                </p>
-              </div>
-            </div>
           </div>
-          <div class="column is-6 right-image " data-aos="fade-left">
-            <img class="is-rounded" src="https://picsum.photos/id/366/600/375" alt="" />
+          <div class="column is-6 right-image aos-init aos-animate" data-aos="fade-left">
+            <img class="is-rounded" src="/static/images/Molecule.png" alt="">
           </div>
         </div>
       </div>
     </div>
     <!-- End About Me Content -->
-    <div class="section-dark resume">
-      <div class="container">
-        <div class="columns is-multiline" data-aos="fade-in" data-aos-easing="linear">
-          <div class="column is-12 about-me">
-            <h1 class="title has-text-centered section-title">
-              View My Resume
-            </h1>
-          </div>
-          <div class="column is-10 has-text-centered is-offset-1">
-            <h2 class="subtitle">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et doloremagna aliqua
-            </h2>
-            <form action="example.docs">
-              <button class="button">
-                Download Resume&emsp;<i class="fad fa-download fa-lg"></i>
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- Begin Services Content -->
-    <div class="section-color services" id="services">
+    <div class="section-color services" id="gan">
       <div class="container">
         <div class="columns is-multiline">
-          <div class="column is-12 about-me" data-aos="fade-in" data-aos-easing="linear">
+          <div class="column is-12 about-me aos-init" data-aos="fade-in" data-aos-easing="linear">
             <h1 class="title has-text-centered section-title">What is a GAN?</h1>
             <h2 class="subtitle">
               Generative Adversarial Networks (GANs) use two neural networks—a generator and a discriminator—competing
-              in a game-like process to produce realistic data.
+              in a
+              game-like process to produce realistic data.
               The generator creates synthetic examples, while the discriminator evaluates them against real data.
               Over time, both networks improve, resulting in highly convincing outputs.
             </h2>
-            <br />
+            <br>
           </div>
           <div class="columns is-12">
-            <div class="column is-4 has-text-centered" data-aos="fade-in" data-aos-easing="linear">
+            <div class="column is-4 has-text-centered aos-init" data-aos="fade-in" data-aos-easing="linear">
               <i class="fad fa-meteor fa-3x"></i>
-              <hr />
+              <hr>
               <h2>
                 <strong>1. Generator</strong>: Learns patterns from real data and tries to create convincing “fakes.”
               </h2>
             </div>
-            <div class="column is-4 has-text-centered" data-aos="fade-in" data-aos-easing="linear">
+            <div class="column is-4 has-text-centered aos-init" data-aos="fade-in" data-aos-easing="linear">
               <i class="fas fa-paint-brush fa-3x"></i>
-              <hr />
+              <hr>
               <h2>
                 <strong>2. Discriminator</strong>: Judges how authentic or fake the generated samples are.
               </h2>
             </div>
-            <div class="column is-4 has-text-centered" data-aos="fade-in" data-aos-easing="linear">
+            <div class="column is-4 has-text-centered aos-init" data-aos="fade-in" data-aos-easing="linear">
               <i class="fas fa-rocket fa-3x"></i>
-              <hr />
+              <hr>
               <h2>
                 <strong>3. Adversarial Training</strong>: Both networks compete, pushing each other to improve.
               </h2>
             </div>
           </div>
-          <hr />
+          <hr>
           <div class="columns is-12">
-            <div class="column is-4 has-text-centered" data-aos="fade-in" data-aos-easing="linear">
+            <div class="column is-4 has-text-centered aos-init" data-aos="fade-in" data-aos-easing="linear">
               <i class="fas fa-upload fa-3x"></i>
-              <hr />
+              <hr>
               <h2>
                 <strong>4. Realistic Outputs</strong>: GANs can generate images, molecules, or text nearly
-                indistinguishable from real data.
+                indistinguishable from
+                real data.
               </h2>
             </div>
-            <div class="column is-4 has-text-centered" data-aos="fade-in" data-aos-easing="linear">
+            <div class="column is-4 has-text-centered aos-init" data-aos="fade-in" data-aos-easing="linear">
               <i class="fas fa-bus fa-3x"></i>
-              <hr />
+              <hr>
               <h2>
                 <strong>5. Broad Applications</strong>: From art and media to drug discovery, GANs fuel innovation in
-                diverse fields.
+                diverse
+                fields.
               </h2>
             </div>
-            <div class="column is-4 has-text-centered" data-aos="fade-in" data-aos-easing="linear">
+            <div class="column is-4 has-text-centered aos-init" data-aos="fade-in" data-aos-easing="linear">
               <i class="fas fa-code fa-3x"></i>
-              <hr />
+              <hr>
               <h2>
                 <strong>6. Ongoing Research</strong>: Challenges like stability and ethical considerations remain active
-                areas of study.
+                areas of
+                study.
               </h2>
             </div>
           </div>
-
 
         </div>
       </div>
     </div>
     <!-- End Services Content -->
     <!-- Begin Skills Content -->
-    <div class="section-light skills" id="skills">
+    <div class="section-light skills" id="how-it-works">
       <div class="container">
         <div class="columns is-multiline">
           <div class="column is-12 about-me">
-            <h1 class="title has-text-centered section-title">Skills</h1>
+            <h1 class="title has-text-centered section-title">How it works</h1>
           </div>
-          <div class="column is-6" data-aos="fade-in" data-aos-easing="linear">
-            <h1>Adobe Experience Design</h1>
-            <progress class="progress" value="70" max="100">30%</progress>
-            <h1>Adobe After Effects</h1>
-            <progress class="progress" value="65" max="100">30%</progress>
-            <h1>Visual Studio Code</h1>
-            <progress class="progress" value="58" max="100">45%</progress>
-            <h1>Sketch</h1>
-            <progress class="progress" value="90" max="100">60%</progress>
+          <!-- Left Column: Image -->
+          <div class="column is-6 left-image aos-init" data-aos="fade-right">
+            <img class="is-rounded" src="/static/images/mole2.png" alt="How it works illustration">
           </div>
-          <div class="column is-6" data-aos="fade-in" data-aos-easing="linear">
-            <h1>HTML</h1>
-            <progress class="progress" value="85" max="100">30%</progress>
-            <h1>CSS</h1>
-            <progress class="progress" value="95" max="100">30%</progress>
-            <h1>VueJS</h1>
-            <progress class="progress" value="70" max="100">45%</progress>
-            <h1>React</h1>
-            <progress class="progress" value="60" max="100">60%</progress>
+          <!-- Right Column: Text -->
+          <div class="column is-6 has-vertically-aligned-content aos-init" data-aos="fade-left">
+            <p>
+              Just tweak the values to edit your molecule generation, then hit the generate button to watch your
+              molecule
+              come to life!
+            </p>
           </div>
         </div>
       </div>
     </div>
+
     <!-- End Skills Content -->
     <!-- Begin Work Content -->
-    <div class="section-dark my-work" id="my-work">
+    <div class="section-dark influence generation" id="influence-generation">
       <div class="container">
-        <div class="columns is-multiline" data-aos="fade-in" data-aos-easing="linear">
+        <div class="columns is-multiline aos-init" data-aos="fade-in" data-aos-easing="linear">
           <div class="column is-12">
-            <h1 class="title has-text-centered section-title">My Work</h1>
+            <h1 class="title has-text-centered section-title">Influence Generation</h1>
+            <p class="has-text-centered">You can influence generation by tweaking each of the following
+              attributes:
+              you are given a 'superstructure'—a base molecular framework—to work with. By selecting and tweaking
+              different
+              attributes (the images below represent various adjustable features), the generator will create new
+              molecules that keep
+              the same overall structure but change parts of it. This lets you explore how small modifications can lead
+              to a variety of unique molecules.
+            </p>
           </div>
           <div class="column is-3">
             <a href="#">
@@ -364,7 +325,7 @@
     <!-- Begin Contact Content -->
     <div class="section-light contact" id="contact">
       <div class="container">
-        <div class="columns is-multiline" data-aos="fade-in-up" data-aos-easing="linear">
+        <div class="columns is-multiline aos-init" data-aos="fade-in-up" data-aos-easing="linear">
           <div class="column is-12 about-me">
             <h1 class="title has-text-centered section-title">
               Get in touch
@@ -375,7 +336,7 @@
               <div class="field">
                 <label class="label">Name</label>
                 <div class="control has-icons-left">
-                  <input class="input" type="text" placeholder="Ex. Jane Smith" name="Name" />
+                  <input class="input" type="text" placeholder="Ex. Jane Smith" name="Name">
                   <span class="icon is-small is-left">
                     <i class="fas fa-user"></i>
                   </span>
@@ -384,7 +345,7 @@
               <div class="field">
                 <label class="label">Email</label>
                 <div class="control has-icons-left">
-                  <input class="input" type="email" placeholder="Ex. hello@arctheme.com" name="Email" />
+                  <input class="input" type="email" placeholder="Ex. hello@arctheme.com" name="Email">
                   <span class="icon is-small is-left">
                     <i class="fas fa-envelope"></i>
                   </span>
@@ -435,6 +396,8 @@
       duration: 800,
     });
   </script>
+
+
 </body>
 
 </html>

@@ -1,4 +1,5 @@
 import tensorflow as tf
+from keras import layers
 from tensorflow.keras import layers, models
 
 class GraphDiscriminator(tf.keras.Model):
@@ -15,7 +16,6 @@ class GraphDiscriminator(tf.keras.Model):
         ])
 
         self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.000099, momentum=0.5)
-
 
     def call(self, adj, node_features):
         batch_size = tf.shape(adj)[0]

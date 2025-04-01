@@ -28,8 +28,5 @@ class GraphDiscriminator(tf.keras.Model):
         x = self.conv2(x)
         x = self.pool(x)
         output = self.fc(x)
-<<<<<<< HEAD
+
         return output #probability score indicating real or fake molecular graph
-=======
-        return output #probability score indicating real or fake molecular graph
->>>>>>> a2930d23c32cd139918a1a07100fe8246ddd523a

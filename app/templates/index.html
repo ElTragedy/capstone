@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css">
   <link rel="stylesheet" type="text/css" href="/static/css/showcase.css">
   <script src="/static/js/showcase.js"></script>
+  <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+  <script src="https://unpkg.com/openchemlib@3.1.1/dist/openchemlib-full.js"></script>
   <script src="https://kit.fontawesome.com/2828f7885a.js"
     integrity="sha384-WAsFbnLEQcpCk8lM1UTWesAf5rGTCvb2Y+8LvyjAAcxK1c3s5c0L+SYOgxvc6PWG"
     crossorigin="anonymous"></script>
@@ -255,132 +257,45 @@
 
     <!-- End Skills Content -->
     <!-- Begin Work Content -->
-    <div class="section-dark influence generation" id="influence-generation">
-      <div class="container">
-        <div class="columns is-multiline aos-init" data-aos="fade-in" data-aos-easing="linear">
-          <div class="column is-12">
-            <h1 class="title has-text-centered section-title">Influence Generation</h1>
-            <p class="has-text-centered">You can influence generation by tweaking each of the following
-              attributes:
-              you are given a 'superstructure'—a base molecular framework—to work with. By selecting and tweaking
-              different
-              attributes (the images below represent various adjustable features), the generator will create new
-              molecules that keep
-              the same overall structure but change parts of it. This lets you explore how small modifications can lead
-              to a variety of unique molecules.
-            </p>
-          </div>
-          <div class="column is-3">
-            <a href="#">
-              <figure class="image is-2by1 work-item"
-                style="background-image: url('https://picsum.photos/320/180?image=0');"></figure>
-            </a>
-          </div>
-          <div class="column is-3">
-            <a href="#">
-              <figure class="image is-2by1 work-item"
-                style="background-image: url('https://picsum.photos/320/180?image=10');"></figure>
-            </a>
-          </div>
-          <div class="column is-3">
-            <a href="#">
-              <figure class="image is-2by1 work-item"
-                style="background-image: url('https://picsum.photos/320/180?image=20');"></figure>
-            </a>
-          </div>
-          <div class="column is-3">
-            <a href="#">
-              <figure class="image is-2by1 work-item"
-                style="background-image: url('https://picsum.photos/320/180?image=30');"></figure>
-            </a>
-          </div>
-          <div class="column is-3">
-            <a href="#">
-              <figure class="image is-2by1 work-item"
-                style="background-image: url('https://picsum.photos/320/180?image=40');"></figure>
-            </a>
-          </div>
-          <div class="column is-3">
-            <a href="#">
-              <figure class="image is-2by1 work-item"
-                style="background-image: url('https://picsum.photos/320/180?image=50');"></figure>
-            </a>
-          </div>
-          <div class="column is-3">
-            <a href="#">
-              <figure class="image is-2by1 work-item"
-                style="background-image: url('https://picsum.photos/320/180?image=60');"></figure>
-            </a>
-          </div>
-          <div class="column is-3">
-            <a href="#">
-              <figure class="image is-2by1 work-item"
-                style="background-image: url('https://picsum.photos/320/180?image=70');"></figure>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- End Work Content -->
     <!-- Begin Contact Content -->
-    <div class="section-light contact" id="contact">
-      <div class="container">
-        <div class="columns is-multiline aos-init" data-aos="fade-in-up" data-aos-easing="linear">
-          <div class="column is-12 about-me">
-            <h1 class="title has-text-centered section-title">
-              Get in touch
-            </h1>
+<div class="section-light model" id="models">
+  <div class="container">
+    <div class="columns is-multiline aos-init" data-aos="fade-in-up" data-aos-easing="linear">
+      <!-- Section Title -->
+      <div class="column is-12 about-me">
+        <h1 class="title has-text-centered section-title" id="mol-Title">
+        </h1>
+      </div>
+      <!-- Molecule Viewer Section -->
+      <div class="column is-12">
+        <div class="model-container" id="model-container">
+          <div class="button-container">
+            <div id="mol-title"></div>
+            <button onclick="switchView('3d')" class="button toggle-button">Show 3D</button>
+            <button onclick="switchView('2d')" class="button toggle-button">Show 2D</button>
           </div>
-          <div class="column is-8 is-offset-2">
-            <form action="https://formspree.io/email@example.com" method="POST">
-              <div class="field">
-                <label class="label">Name</label>
-                <div class="control has-icons-left">
-                  <input class="input" type="text" placeholder="Ex. Jane Smith" name="Name">
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-user"></i>
-                  </span>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Email</label>
-                <div class="control has-icons-left">
-                  <input class="input" type="email" placeholder="Ex. hello@arctheme.com" name="Email">
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-envelope"></i>
-                  </span>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Message</label>
-                <div class="control">
-                  <textarea class="textarea" placeholder="Textarea" name="Message"></textarea>
-                </div>
-              </div>
-              <div class="field">
-                <div class="control ">
-                  <button class="button submit-button">
-                    Submit&nbsp;&nbsp;
-                    <i class="fas fa-paper-plane"></i>
-                  </button>
-                </div>
-              </div>
-            </form>
+          <div id="placeholder">
+            <p>Click "Run" to load the molecule.</p>
+            <button id="runBtn" class="button">Run</button>
           </div>
+          <div id="viewer-container"></div>
+          <div id="mol-info"></div>
+          <div id="mol-date"></div>
         </div>
       </div>
     </div>
-    <!-- End Contact Content -->
+  </div>
+</div>
+<!-- End Contact Content -->
   </div>
   <!-- End Main Content -->
 
   <!-- Begin Footer -->
   <div class="footer">
     <p>
-      <strong class="white">Bulma</strong> by <a href="http://jgthms.com">Jeremy Thomas</a>.
-      The source code is licensed
-      <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content is licensed
-      <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+      <a>Rivas Molecules</a>
+      <a>Baylor University</a>
+      <a>Spring 2025</a>
     </p>
   </div>
   <!-- End Footer -->
@@ -396,8 +311,175 @@
       duration: 800,
     });
   </script>
+  <script>
+    $(document).ready(function () {
+      $("#runBtn").click(function () {
+        $("#placeholder").fadeOut(); // Hide the placeholder
+
+        $.ajax({
+          url: "/run_notebook",
+          type: "POST",
+          success: function () {
+            fetchAndRenderMolecule();
+            switchView("3d"); // Default to 3D view
+            fetchMolInfo();
+            fetchMolDate();
+          },
+          error: function (err) {
+            $("#notebook-output").html("Error: " + err.responseText);
+          },
+        });
+      });
+
+      function fetchAndRenderMolecule() {
+        fetch("/get_molecule")
+          .then((response) => response.text())
+          .then((mol) => {
+            if (!mol) {
+              console.error("No molecule data received.");
+              return;
+            }
+
+            console.log("MOL received:", mol);
 
 
+            // Prepare the container
+            $("#viewer-container").html(`
+              <div id="viewer" style="width: 80%; height: 400px; max-width: 80%;"></div>
+              <canvas id="viewer2d" style="width: 80%; height: 60%;"></canvas>
+            `);
+
+            mol = decodeURIComponent(mol); // Decode the molecule data
+            console.log("Decoded MOL:", mol);
+
+            // You can choose to load either 3D or 2D based on your initial preference
+            load3DStructure(mol); // Default to 3D, for example
+            load2DStructure(mol); // Load 2D structure as well
+
+            // Initially show 3D or 2D based on your preference
+            switchView("3d"); // Set to 3D initially (you could set to "2d" if needed)
+          })
+          .catch((error) => console.error("Error fetching molecule:", error));
+      }
+
+      function load3DStructure(mol) {
+        var viewer = $3Dmol.createViewer($("#viewer"), {
+          backgroundColor: "white",
+        });
+        viewer.addModel(mol, "mol");
+        viewer.setStyle({}, { stick: {} });
+        viewer.setBackgroundColor("#3c4172");
+        viewer.zoomTo();
+        viewer.render();
+
+        const canvas = viewer.getCanvas(); // Get the canvas element created by 3Dmol.js
+        canvas.style.position = 'relative';  // Ensure it’s relative for proper layout
+        canvas.style.width = '100%';  // Make the canvas width responsive
+        canvas.style.height = '100%'; // Make the canvas height responsive
+      }
+
+      function load2DStructure(mol) {
+        let canvas = document.getElementById("viewer2d");
+        let ctx = canvas.getContext("2d");
+        $("#viewer2d").hide();
+
+
+
+        // Fetch the 2D image from the local backend
+        fetch("/get_mol_image")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to fetch image");
+            }
+            return response.blob();
+          })
+          .then((blob) => {
+            // Create an image element
+            let img = new Image();
+            img.onload = function () {
+              // Set canvas dimensions to match image size
+              canvas.width = img.width;
+              canvas.height = img.height;
+
+              // Clear previous content and draw the new image at original size
+              ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous image
+              ctx.drawImage(img, 0, 0); // Draw the image at its natural size
+            };
+            img.src = URL.createObjectURL(blob); // Set the image source to the blob
+          })
+          .catch((error) =>
+            console.error("Error loading 2D structure:", error)
+          );
+      }
+
+      function fetchMolInfo() {
+        fetch("/get_mol_info")
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data?.PropertyTable?.Properties?.length) return;
+
+            console.log("Molecule info received:", data);
+            const molecule = data.PropertyTable.Properties[0];
+
+            $("#mol-title").html(`<h1 class="title has-text-centered section-title">${molecule.Title}</h1>`);
+            $("#mol-info").html(`
+                            <p><strong>CID:</strong> ${molecule.CID}</p>
+                            <p><strong>Molecular Formula:</strong> ${molecule.MolecularFormula}</p>
+                        `);
+          })
+          .catch((error) =>
+            console.error("Error fetching molecule info:", error)
+          );
+      }
+
+      function fetchMolDate() {
+        fetch("/get_mol_creation_date")
+          .then((response) => response.json())
+          .then((data) => {
+            let moleculeDate =
+              data?.InformationList?.Information?.[0]?.CreationDate;
+            if (!moleculeDate) {
+              console.error("Invalid data structure:", data);
+              return;
+            }
+
+            let formattedDate = `${moleculeDate.Year}-${String(
+              moleculeDate.Month
+            ).padStart(2, "0")}-${String(moleculeDate.Day).padStart(2, "0")}`;
+
+            $("#mol-date").html(`
+                            <p><strong>Creation Date:</strong> ${formattedDate}</p>
+                        `);
+            console.log("Formatted date:", formattedDate);
+          })
+          .catch((error) =>
+            console.error("Error fetching molecule date:", error)
+          );
+      }
+    });
+
+    // Move this function outside of $(document).ready() to make it globally accessible
+    function switchView(mode) {
+      if (mode === "3d") {
+        $("#viewer").show();
+        $("#viewer2d").hide();
+      } else {
+        $("#viewer").hide();
+        $("#viewer2d").show();
+      }
+    }
+    $("#toggleViewBtn").click(function () {
+      // Detect the current active view (check which model is visible)
+      if ($("#viewer").is(":visible")) {
+        // Currently showing 3D, so switch to 2D
+        switchView("2d");
+      } else {
+        // Currently showing 2D, so switch to 3D
+        switchView("3d");
+      }
+    });
+  </script>
+  </script>
 </body>
 
 </html>

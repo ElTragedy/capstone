@@ -1,11 +1,14 @@
 from app import app
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, send_file
 import subprocess  # or use your own notebook runner code
 import sys
 import rdkit.Chem as Chem
 import rdkit.Chem.AllChem as AllChem
+from rdkit.Chem import Draw
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import quote, unquote
+from io import BytesIO
 
 @app.route('/')
 def index():
@@ -34,9 +37,6 @@ def get_molecule():
         # Read SMILES string from file
         with open("notebooks/molecule.smiles", "r") as file:
             smiles = file.read().strip()
-            
-        if '%23' in smiles:
-            smiles = smiles.replace('%23', '#')
 
         # Convert SMILES to 3D molecule
         mol = Chem.MolFromSmiles(smiles)
@@ -51,18 +51,40 @@ def get_molecule():
         return mol_block
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/get_mol_image')
+def get_mol_image():
+        # Read SMILES string from file
+        with open("notebooks/molecule.smiles", "r") as file:
+            smiles = file.read().strip()
+    
+        # Compute the 2D coordinates of the molecule
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            return jsonify({"error": "Invalid SMILES string"}), 400
+        
+        AllChem.Compute2DCoords(mol)
+        
+        # Generate the image
+        img = Draw.MolToImage(mol)
+        
+        # Save the image to a byte stream
+        img_byte_array = BytesIO()
+        img.save(img_byte_array, format='PNG')
+        img_byte_array.seek(0)
+        
+        # Return the image as a response
+        return send_file(img_byte_array, mimetype='image/png')
+        
 
 @app.route('/get_mol_info')
 def get_mol_info():
     try:
-            #read from this link https://pubchem.ncbi.nlm.nih.gov/#query=[smile here]
-            #scrape the data and return it
-            
         with open("notebooks/molecule.smiles", "r") as file:
             smiles = file.read().strip()
 
         print(smiles)
-        url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/' + smiles + '/property/Title,MolecularFormula/JSON'
+        url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/' + quote(smiles) + '/property/Title,MolecularFormula/JSON'
         print(url)
         response = requests.get(url)
         data = response.json()
@@ -78,7 +100,7 @@ def get_mol_creation_date():
         with open("notebooks/molecule.smiles", "r") as file:
             smiles = file.read().strip()
 
-        url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/' + smiles + '/dates/JSON'
+        url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/' + quote(smiles) + '/dates/JSON'
         response = requests.get(url)
         data = response.json()
             

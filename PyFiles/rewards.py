@@ -37,7 +37,7 @@ def uniqueness_reward(gen_smiles, curr_mol):
   curr_smiles = Chem.MolToSmiles(curr_mol)
   if validity_reward(curr_mol) == 0:
       print("Validity failed")
-      return -0.5
+      return -0.3
   occurrence_count = gen_smiles.count(curr_smiles)
   total_molecules = len(gen_smiles) + 1  
 
@@ -50,17 +50,14 @@ def uniqueness_reward(gen_smiles, curr_mol):
 def novelty_reward(curr_mol, train_smiles, generated_smiles):
     unique_train = set(train_smiles)
     if validity_reward(curr_mol) == 0:
-        print("Validity failed")
         return -0.3
-    elif uniqueness_reward(generated_smiles, curr_mol) == 0:
-        print("Uniqueness failed")
-        return -0.3
+    elif uniqueness_reward(generated_smiles, curr_mol) < 1:
+        return -2.5
     curr_smiles = Chem.MolToSmiles(curr_mol)
     if curr_smiles in unique_train:
-        print("Novelty failed")
         return -0.7
     else:
-        return 1
+        return 2.3
     
 def drug_like_reward(mol):
     if validity_reward(mol) > 0:

@@ -135,7 +135,13 @@ class test_GraphGenerator(tf.keras.Model):
                         gradients = tape.gradient(scaled_loss, self.trainable_variables)
                         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
 
-                        if epoch % 10 == 0:
+                        if epochs <= 10:
+                            print(f"Epoch {epoch+1}/{epochs}",
+                                f"D Loss: {d_loss.numpy():.4f}",
+                                f"G Loss: {g_loss.numpy():.4f}", 
+                                f"R Loss: {real_r_loss:.4f}", 
+                                f"Scaled Loss: {scaled_loss.numpy():.4f}")
+                        elif epoch % 10 == 0:
                             print(f"Epoch {epoch+1}/{epochs}",
                                 f"D Loss: {d_loss.numpy():.4f}",
                                 f"G Loss: {g_loss.numpy():.4f}", 

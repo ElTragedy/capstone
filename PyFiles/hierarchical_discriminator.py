@@ -15,7 +15,7 @@ class GraphDiscriminatorDiff(tf.keras.Model):
 
         self.fc = layers.Dense(1, activation = 'sigmoid')
 
-        self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.0002, momentum=0.5)    
+        self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.0004, momentum=0.5)    
    
     def call(self, adj, node_features):
         x = self.conv1(node_features)

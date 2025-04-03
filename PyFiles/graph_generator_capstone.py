@@ -24,7 +24,7 @@ class GraphGenerator(tf.keras.Model):
             layers.Dense((num_nodes * num_nodes) + (num_nodes * node_features), activation="softmax")
         ])
 
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0005, beta_1=0.5)
 
     def call(self, z):
         batch_size = tf.shape(z)[0]

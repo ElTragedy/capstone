@@ -7,7 +7,7 @@ def adjacency_matrix_to_mol(adj, nodes):
   atom_types = np.unique(nodes)
   matrix = adj
   atom_map = {i: mol.AddAtom(Chem.Atom(int(atom_types[i]))) for i in range(len(atom_types))}
-
+  
   if isinstance(matrix, tf.Tensor):
       matrix = matrix.numpy()
   if isinstance(atom_types, tf.Tensor):
@@ -48,5 +48,7 @@ def adjacency_matrix_to_mol(adj, nodes):
 
             print(f"Adding bond: {i}-{j} Type: {bond_type}")
             mol.AddBond(atom_map[i], atom_map[j], bond_type)
+
+  mol = Chem.RemoveHs(mol) # Remove extraneous hydrogens
 
   return mol

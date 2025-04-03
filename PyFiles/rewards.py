@@ -28,6 +28,7 @@ def stray_hydros_reward(mol):
     if mol is None:
         return -0.5
     elif any(atom.GetAtomicNum() == 1 and atom.GetDegree() == 0 for atom in mol.GetAtoms()):
+        mol = Chem.RemoveHs(mol)  
         return -0.5
     else:
         return 0.5

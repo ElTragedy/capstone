@@ -103,6 +103,7 @@ class test_GraphGenerator(tf.keras.Model):
                         gen_adj, gen_node_features = self(z)
                         gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_adj, gen_node_features)))
                         curr_mol = adjacency_matrix_to_mol(gen_adj, gen_node_features)
+                        curr_mol = Chem.RemoveHs(curr_mol) # Remove extraneous hydrogens
                         validity = tf.convert_to_tensor(rewards.validity_reward(curr_mol), dtype = tf.float32)
                         stray_h = tf.convert_to_tensor(rewards.stray_hydros_reward(curr_mol), dtype = tf.float32)
                         uniqueness = tf.convert_to_tensor(rewards.uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
@@ -125,8 +126,8 @@ class test_GraphGenerator(tf.keras.Model):
 
                         g_loss = self.loss_function(tf.ones_like(fake_output), fake_output)
                         log_probs = self.log_prob(z)
-                        lambda_g = 1.0
-                        lambda_r = 10.0
+                        lambda_g = 3.0
+                        lambda_r = 7.0
                         scaled_loss = lambda_g * g_loss - lambda_r * tf.reduce_mean(log_probs * r_loss)
                         g_loss_list.append(g_loss.numpy())
                         scl_loss_list.append(scaled_loss.numpy())

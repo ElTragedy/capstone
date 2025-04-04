@@ -30,7 +30,7 @@ class test_GraphGenerator(tf.keras.Model):
             layers.BatchNormalization(),
             layers.Dense((num_nodes * num_nodes) + (num_nodes * node_features), activation="sigmoid")])
 
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0005, beta_1=0.5)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
 
     def call(self, z):
         batch_size = tf.shape(z)[0]
@@ -135,17 +135,17 @@ class test_GraphGenerator(tf.keras.Model):
                         gradients = tape.gradient(scaled_loss, self.trainable_variables)
                         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
 
-                        if epochs <= 10:
-                            print(f"Epoch {epoch+1}/{epochs}",
-                                f"D Loss: {d_loss.numpy():.4f}",
-                                f"G Loss: {g_loss.numpy():.4f}", 
-                                f"R Loss: {real_r_loss:.4f}", 
-                                f"Scaled Loss: {scaled_loss.numpy():.4f}")
-                        elif epoch % 10 == 0:
-                            print(f"Epoch {epoch+1}/{epochs}",
-                                f"D Loss: {d_loss.numpy():.4f}",
-                                f"G Loss: {g_loss.numpy():.4f}", 
-                                f"R Loss: {real_r_loss:.4f}", 
-                                f"Scaled Loss: {scaled_loss.numpy():.4f}")
+                if epochs <= 10:
+                    print(f"Epoch {epoch+1}/{epochs}",
+                        f"D Loss: {d_loss.numpy():.4f}",
+                        f"G Loss: {g_loss.numpy():.4f}", 
+                        f"R Loss: {real_r_loss:.4f}", 
+                        f"Scaled Loss: {scaled_loss.numpy():.4f}")
+                elif epoch % 10 == 0:
+                    print(f"Epoch {epoch+1}/{epochs}",
+                        f"D Loss: {d_loss.numpy():.4f}",
+                        f"G Loss: {g_loss.numpy():.4f}", 
+                        f"R Loss: {real_r_loss:.4f}", 
+                        f"Scaled Loss: {scaled_loss.numpy():.4f}")
 
         return d_loss_list, g_loss_list, r_loss_list, scl_loss_list

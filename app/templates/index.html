@@ -371,6 +371,9 @@
         viewer.setBackgroundColor("#3c4172");
         viewer.zoomTo();
         viewer.render();
+        viewer.spin(true); // Start the animation
+        viewer.setSpin(true, 0.5); // Set the spin speed
+        viewer.setSpinDirection(1); // Set the spin direction (1 for clockwise, -1 for counterclockwise)
 
         const canvas = viewer.getCanvas(); // Get the canvas element created by 3Dmol.js
         canvas.style.position = 'relative';  // Ensure it’s relative for proper layout

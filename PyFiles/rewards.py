@@ -65,3 +65,13 @@ def drug_like_reward(mol):
         return drug_score
     else: 
         return -0.3
+
+def calculate_total_reward(curr_mol, gen_smiles_list, train_smiles):
+    validity = tf.convert_to_tensor(validity_reward(curr_mol), dtype = tf.float32)
+    stray_h = tf.convert_to_tensor(stray_hydros_reward(curr_mol), dtype = tf.float32)
+    uniqueness = tf.convert_to_tensor(uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
+    novelty = tf.convert_to_tensor(novelty_reward(curr_mol, train_smiles, gen_smiles_list), dtype = tf.float32) 
+    drug_like = tf.convert_to_tensor(drug_like_reward(curr_mol), dtype = tf.float32)
+
+    total_reward = tf.convert_to_tensor(validity + stray_h + uniqueness + novelty + drug_like, dtype = tf.float32)
+    return total_reward

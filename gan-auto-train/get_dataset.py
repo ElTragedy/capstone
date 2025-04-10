@@ -71,4 +71,4 @@ def get_dataset():
 
     dataset = pp.create_dataset(adj_matrices, one_hot_node_features, batch_size = 32)
 
-    return dataset
+    return dataset, train_smiles

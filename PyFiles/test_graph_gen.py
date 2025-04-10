@@ -4,6 +4,7 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from matrix_to_mol import adjacency_matrix_to_mol
+import checkpoint as cp
 import rewards
 import warnings
 
@@ -65,7 +66,7 @@ class test_GraphGenerator(tf.keras.Model):
         logits = self.mlp(z)
         return tf.nn.log_softmax(logits)
 
-    def fit(self, dataset, discriminator, train_smiles, epochs=10):
+    def fit(self, dataset, discriminator, train_smiles, SAVE_EVERY, OUTPUT_DIR, epochs = 10):
         d_loss_list = []
         g_loss_list = []
         r_loss_list = []
@@ -104,13 +105,7 @@ class test_GraphGenerator(tf.keras.Model):
                         gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_adj, gen_node_features)))
                         curr_mol = adjacency_matrix_to_mol(gen_adj, gen_node_features)
                         curr_mol = Chem.RemoveHs(curr_mol) # Remove extraneous hydrogens
-                        validity = tf.convert_to_tensor(rewards.validity_reward(curr_mol), dtype = tf.float32)
-                        stray_h = tf.convert_to_tensor(rewards.stray_hydros_reward(curr_mol), dtype = tf.float32)
-                        uniqueness = tf.convert_to_tensor(rewards.uniqueness_reward(gen_smiles_list, curr_mol), dtype = tf.float32) 
-                        novelty = tf.convert_to_tensor(rewards.novelty_reward(curr_mol, train_smiles, gen_smiles_list), dtype = tf.float32) 
-                        drug_like = tf.convert_to_tensor(rewards.drug_like_reward(curr_mol), dtype = tf.float32)
-
-                        total_reward = tf.convert_to_tensor(validity + stray_h + uniqueness + novelty + drug_like, dtype = tf.float32)
+                        total_reward = rewards.calculate_total_reward(curr_mol, gen_smiles_list, train_smiles)
                         alpha = 0.99  
                         if hasattr(self, "reward_baseline"):
                             self.reward_baseline = alpha * self.reward_baseline + (1 - alpha) * total_reward
@@ -135,13 +130,8 @@ class test_GraphGenerator(tf.keras.Model):
                         gradients = tape.gradient(scaled_loss, self.trainable_variables)
                         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
 
-                if epochs <= 10:
-                    print(f"Epoch {epoch+1}/{epochs}",
-                        f"D Loss: {d_loss.numpy():.4f}",
-                        f"G Loss: {g_loss.numpy():.4f}", 
-                        f"R Loss: {real_r_loss:.4f}", 
-                        f"Scaled Loss: {scaled_loss.numpy():.4f}")
-                elif epoch % 10 == 0:
+                if (epoch + 1) % SAVE_EVERY == 0:
+                    cp.save_checkpoint(self, discriminator, epoch + 1, OUTPUT_DIR)
                     print(f"Epoch {epoch+1}/{epochs}",
                         f"D Loss: {d_loss.numpy():.4f}",
                         f"G Loss: {g_loss.numpy():.4f}", 

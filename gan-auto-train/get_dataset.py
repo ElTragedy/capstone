@@ -17,7 +17,7 @@ def normalize_graph_features(x):
     return x
 
 def get_dataset():
-    data = pd.read_csv("gan-auto-train/data/qm9.csv")
+    data = pd.read_csv("data/qm9.csv")
 
     data['adj_matrix'] = data["adj_matrix"].apply(normalize_graph_features)
     data['node_features'] = data["node_features"].apply(normalize_graph_features)
@@ -28,7 +28,7 @@ def get_dataset():
     valid_atom_types = [1, 6, 7, 8, 9]
     num_features = len(valid_atom_types)
 
-    max_size = max(matrix.shape[0] for matrix in qm9['adj_matrix'])
+    max_size = max(matrix.shape[0] for matrix in data['adj_matrix'])
 
     one_hot_node_features = [
         pp.preprocess_node_features(nf, valid_atom_types, num_nodes)
@@ -67,8 +67,9 @@ def get_dataset():
 
     data['adj_matrix'] = data['adj_matrix'].apply(lambda x: pp.pad_adj_matrix(x, max_size))
 
+    adj_matrices = np.stack(data['adj_matrix'].values)
     one_hot_node_features = np.stack(one_hot_node_features)
 
     dataset = pp.create_dataset(adj_matrices, one_hot_node_features, batch_size = 32)
 
-    return dataset, train_smiles
+    return dataset, train_smiles, max_size, num_features

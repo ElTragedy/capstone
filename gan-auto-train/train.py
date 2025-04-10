@@ -3,13 +3,13 @@ import sys
 import tensorflow as tf
 from rdkit import Chem
 
-sys.path.append(os.path.abspath('/Users/kalebray/capstone/PyFiles'))
+sys.path.append(os.path.abspath('./PyFiles'))
 
-from PyFiles import hierarchical_discriminator as hd
-from PyFiles import hierarchical_discriminator_nd as hd_nd
-from PyFiles import rewards as rds
-from PyFiles import test_graph_gen as gen
-from PyFiles import checkpoint as cp
+import hierarchical_discriminator as hd
+import hierarchical_discriminator_nd as hd_nd
+import rewards as rds
+import test_graph_gen as gen
+import checkpoint as cp
 import get_dataset
 
 DATA_DIR = "./data"
@@ -21,12 +21,12 @@ BATCH_SIZE = 32
 SAVE_EVERY = 25
 LATENT_DIM = 256
 
-dataset, train_smiles = get_dataset.get_dataset()
+dataset, train_smiles, NUM_NODES, NUM_FEATURES = get_dataset.get_dataset()
 
-generator = gen.test_GraphGenerator()
-no_diff_gen = gen.test_GraphGenerator()
-diff_discriminator = hd.GraphDiscriminatorDiff()
-nodiff_discriminator = hd_nd.GraphDiscriminatorNoDiff()
+generator = gen.test_GraphGenerator(NUM_NODES, NUM_FEATURES, LATENT_DIM)
+no_diff_gen = gen.test_GraphGenerator(NUM_NODES, NUM_FEATURES, LATENT_DIM)
+diff_discriminator = hd.GraphDiscriminatorDiff(NUM_NODES, NUM_FEATURES)
+nodiff_discriminator = hd_nd.GraphDiscriminatorNoDiff(NUM_NODES, NUM_FEATURES)
 
 gen_optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002, beta_1 = 0.5)
 diff_disc_optimizer = tf.keras.optimizers.SGD(learning_rate = 0.0002, momentum = 0.5)

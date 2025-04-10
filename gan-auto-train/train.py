@@ -3,7 +3,7 @@ import sys
 import tensorflow as tf
 from rdkit import Chem
 
-sys.path.append(os.path.abspath('../PyFiles'))
+sys.path.append(os.path.abspath('/Users/kalebray/capstone/PyFiles'))
 
 from PyFiles import hierarchical_discriminator as hd
 from PyFiles import hierarchical_discriminator_nd as hd_nd

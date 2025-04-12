@@ -3,7 +3,9 @@ import sys
 import tensorflow as tf
 from rdkit import Chem
 
-sys.path.append(os.path.abspath('./PyFiles'))
+sys.path.insert(0, os.path.abspath('./PyFiles_docker_test'))
+#print("PYTHONPATH =", sys.path)
+#print("Checking for hierarchical_discriminator.py:", os.path.exists('./PyFiles/hierarchical_discriminator.py'))
 
 import hierarchical_discriminator as hd
 import hierarchical_discriminator_nd as hd_nd
@@ -25,7 +27,7 @@ dataset, train_smiles, NUM_NODES, NUM_FEATURES = get_dataset.get_dataset()
 
 generator = gen.test_GraphGenerator(NUM_NODES, NUM_FEATURES, LATENT_DIM)
 no_diff_gen = gen.test_GraphGenerator(NUM_NODES, NUM_FEATURES, LATENT_DIM)
-diff_discriminator = hd.GraphDiscriminatorDiff(NUM_NODES, NUM_FEATURES)
+diff_discriminator = hd.GraphDiscriminator(NUM_NODES, NUM_FEATURES)
 nodiff_discriminator = hd_nd.GraphDiscriminatorNoDiff(NUM_NODES, NUM_FEATURES)
 
 gen_optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002, beta_1 = 0.5)

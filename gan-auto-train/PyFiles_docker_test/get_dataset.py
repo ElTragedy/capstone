@@ -1,15 +1,22 @@
+import os
+import sys
 import tensorflow as tf
 import pandas as pd
 import re
 import ast
 import numpy as np
 from rdkit import Chem
-from PyFiles import hierarchical_discriminator as hd
-from PyFiles import hierarchical_discriminator_nd as hd_nd
-from PyFiles import rewards as rds
-from PyFiles.matrix_to_mol import adjacency_matrix_to_mol as adj
-from PyFiles import preprocess as pp
-from PyFiles import test_graph_gen as gen
+#from PyFiles import hierarchical_discriminator as hd
+#from PyFiles import hierarchical_discriminator_nd as hd_nd
+#from PyFiles import rewards as rds
+#from PyFiles import preprocess as pp
+#from PyFiles import test_graph_gen as gen
+
+sys.path.insert(0, os.path.abspath('./PyFiles_docker_test'))
+
+from matrix_to_mol import adjacency_matrix_to_mol as adj
+import preprocess as pp
+
 
 def normalize_graph_features(x):
     x = re.sub(r'(?<=[0-9])\s+(?=[0-9])', ',', x)

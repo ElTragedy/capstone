@@ -1,0 +1,10 @@
+#version: '3.11'
+
+services:
+  gan:
+    build: .
+    volumes:
+      - ./data:/app/data          
+      - ./output:/app/output      
+    command: python train.py
+    restart: unless-stopped

@@ -392,6 +392,44 @@
           backgroundColor: "white",
         });
         viewer.addModel(mol, "mol");
+        const atoms = viewer.selectedAtoms({});
+
+        let labelsAdded = false;
+
+        // Get the HTML element used by the viewer (usually a canvas inside a div)
+        const viewerElement = viewer.container; // or document.getElementById("viewerDiv")
+        
+        viewerElement.addEventListener("mousedown", () => {
+            if (labelsAdded) return;
+        
+            const atoms = viewer.selectedAtoms({});
+            const offset = {x: 0.5, y: 0.5, z: 0.5};
+        
+            for (let atom of atoms) {
+                viewer.addLabel(`${atom.elem}`, {
+                    position: {
+                        x: atom.x + offset.x,
+                        y: atom.y + offset.y,
+                        z: atom.z + offset.z
+                    },
+                    fontSize: 20,
+                    fontColor: "white",
+                    backgroundOpacity: 0.0,
+                    inFront: true
+                });
+            }
+        
+            viewer.render();
+            labelsAdded = true;
+        });
+        viewerElement.addEventListener("mouseup", () => {
+          if (!labelsAdded) return;
+      
+          viewer.removeAllLabels();
+          labelsAdded = false;
+      
+          viewer.render();
+      });
         viewer.setStyle({}, { stick: {} });
         viewer.setBackgroundColor("#14161A");
         viewer.zoomTo();

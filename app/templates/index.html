@@ -258,34 +258,57 @@
     <!-- End Skills Content -->
     <!-- Begin Work Content -->
     <!-- Begin Contact Content -->
-<div class="section-light model" id="models">
-  <div class="container">
-    <div class="columns is-multiline aos-init" data-aos="fade-in-up" data-aos-easing="linear">
-      <!-- Section Title -->
-      <div class="column is-12 about-me">
-        <h1 class="title has-text-centered section-title" id="mol-Title">
-        </h1>
-      </div>
-      <!-- Molecule Viewer Section -->
-      <div class="column is-12">
-        <div class="model-container" id="model-container">
-          <div class="button-container">
-            <div id="mol-title"></div>
-            <button onclick="switchView('3d')" class="button toggle-button">Show 3D</button>
-            <button onclick="switchView('2d')" class="button toggle-button">Show 2D</button>
+    <!-- Title -->
+<div class="column is-12">
+  <h1 id="mol-Title" class="title has-text-centered section-title"
+      style="margin-top: 2rem; position: relative; z-index: 3;">
+      <!-- FIXED: added margin-top and z-index to ensure it's above the viewer -->
+    Molecule Viewer
+  </h1>
+</div>
+
+<!-- Buttons Container -->
+<div class="column is-12">
+  <div class="button-container" 
+       style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 3;">
+       <!-- FIXED: z-index to float above the viewer -->
+    <div id="mol-title" style="margin-bottom: 0.5rem;"></div>
+    <button onclick="switchView('3d')" class="button toggle-button">Show 3D</button>
+    <button onclick="switchView('2d')" class="button toggle-button">Show 2D</button>
+  </div>
+</div>
+
+<!-- Viewer Container -->
+<div class="column is-12">
+  <div id="viewer-container" 
+       style="text-align: center; position: relative; z-index: 1; margin-top: 5rem;">
+       <!-- FIXED: pushed viewer lower with margin-top -->
+
+    <div id="viewer" 
+         style="margin: 0 auto; width: 60%; height: 400px; position: relative; display: block;">
+         <!-- FIXED: use relative instead of absolute to avoid overlapping -->
+    </div>
+
+    <canvas id="viewer2d" 
+            style="width: 50%; max-width: 400px; display: none; margin: 0 auto; display: block;">
+    </canvas>
+  </div>
+</div>
+
+    
+          <!-- Placeholder and Info Sections -->
+          <div class="column is-12">
+            <div id="placeholder" style="text-align: center;">
+              <p>Click "Run" to load the molecule.</p>
+              <button id="runBtn" class="button">Run</button>
+            </div>
+            <div id="mol-info" style="text-align: center"></div>
+            <div id="mol-date" style="text-align: center"></div>
           </div>
-          <div id="placeholder">
-            <p>Click "Run" to load the molecule.</p>
-            <button id="runBtn" class="button">Run</button>
-          </div>
-          <div id="viewer-container"></div>
-          <div id="mol-info"></div>
-          <div id="mol-date"></div>
         </div>
       </div>
     </div>
-  </div>
-</div>
+    
 <!-- End Contact Content -->
   </div>
   <!-- End Main Content -->
@@ -344,13 +367,15 @@
 
 
             // Prepare the container
-            $("#viewer-container").html(`
-              <div id="viewer" style="width: 80%; height: 400px; max-width: 80%;"></div>
-              <canvas id="viewer2d" style="width: 80%; height: 60%;"></canvas>
-            `);
+            
 
             mol = decodeURIComponent(mol); // Decode the molecule data
             console.log("Decoded MOL:", mol);
+
+            document.getElementById("viewer").innerHTML = "";
+            let canvas = document.getElementById("viewer2d");
+            let ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // You can choose to load either 3D or 2D based on your initial preference
             load3DStructure(mol); // Default to 3D, for example
@@ -368,15 +393,13 @@
         });
         viewer.addModel(mol, "mol");
         viewer.setStyle({}, { stick: {} });
-        viewer.setBackgroundColor("#3c4172");
+        viewer.setBackgroundColor("#14161A");
         viewer.zoomTo();
         viewer.render();
         viewer.spin(true); // Start the animation
-        viewer.setSpin(true, 0.5); // Set the spin speed
-        viewer.setSpinDirection(1); // Set the spin direction (1 for clockwise, -1 for counterclockwise)
 
         const canvas = viewer.getCanvas(); // Get the canvas element created by 3Dmol.js
-        canvas.style.position = 'relative';  // Ensure it’s relative for proper layout
+        canvas.style.position = 'center';  // Ensure it’s relative for proper layout
         canvas.style.width = '100%';  // Make the canvas width responsive
         canvas.style.height = '100%'; // Make the canvas height responsive
       }
@@ -384,7 +407,6 @@
       function load2DStructure(mol) {
         let canvas = document.getElementById("viewer2d");
         let ctx = canvas.getContext("2d");
-        $("#viewer2d").hide();
 
 
 
@@ -471,16 +493,6 @@
         $("#viewer2d").show();
       }
     }
-    $("#toggleViewBtn").click(function () {
-      // Detect the current active view (check which model is visible)
-      if ($("#viewer").is(":visible")) {
-        // Currently showing 3D, so switch to 2D
-        switchView("2d");
-      } else {
-        // Currently showing 2D, so switch to 3D
-        switchView("3d");
-      }
-    });
   </script>
   </script>
 </body>

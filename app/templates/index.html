@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Showcase - Personal Portfolio One Page Bulma Theme</title>
+  <title>Rivas Molecules</title>
   <!-- Bulma Version 1-->
   <link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css">
   <link rel="stylesheet" type="text/css" href="/static/css/showcase.css">
@@ -92,28 +92,28 @@
       </div>
       <!-- End Hero Content-->
       <!-- Begin Hero Menu -->
-      <div class="hero-foot ">
+      <div class="hero-foot">
         <div class="hero-foot--wrapper">
           <div class="columns">
             <div class="column is-12 hero-menu-desktop has-text-centered is-fixed-top">
               <ul>
-                <li class="is-active">
+                <li>
                   <a href="#home">Home</a>
                 </li>
                 <li>
-                  <a href="#our-site">Our Site</a>
+                  <a href="#our-site">About</a>
                 </li>
                 <li>
-                  <a href="#gan">GAN?</a>
+                  <a href="#gan">What is GAN?</a>
                 </li>
                 <li>
-                  <a href="#how-it-works">How it works</a>
+                  <a href="#how-it-works">How it Works</a>
                 </li>
                 <li>
-                  <a href="#influence-generation">Influence Generation</a>
+                  <a href="#molecule-viewer">Generate Molecule</a>
                 </li>
                 <li>
-                  <a href="#generate">generate</a>
+                  <a href="/leaderboard">Leaderboard</a>
                 </li>
               </ul>
             </div>
@@ -129,31 +129,39 @@
   <!-- Begin Main Content -->
   <div class="main-content">
     <!-- Begin Our Site Section -->
-    <div class="section-light our-site" id="our-site">
+    <div class="section-light our-site" id="our-site" style="background-color: #2c3e50; padding: 4rem 0;">
       <div class="container">
         <div class="column is-12 about-me">
-          <h1 class="title has-text-centered section-title">Our Site</h1>
+          <h1 class="title has-text-centered section-title" style="color: #ecf0f1; font-size: 2.5rem; margin-bottom: 2rem;">About Our Project</h1>
         </div>
         <div class="columns is-multiline">
           <div class="column is-6 has-vertically-aligned-content aos-init aos-animate" data-aos="fade-right">
-            <p class="is-larger">
-                <strong>
-                This is a site that we created in our capstone to demonstrate
-                a GAN model we built and its ability to generate molecules in
-                Spring of 2025!
-              </strong>
-            </p>
-            <br>
-            <p>
-              Big thank you to the contributors that made this possible:
-              Dr. Fendt, Dr. Rivas, Kaleb Ray, Seth Kacura, Ethan Triem,
-              Aaron Sierra, David Day, Cheyenne Garza.
-            </p>
-            <br>
-            <div class="is-divider"></div>
+            <div style="background: rgba(236, 240, 241, 0.1); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              <p class="is-larger" style="color: #ecf0f1; font-size: 1.2rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                <strong style="color: #3498db;">
+                  This is a site that we created in our capstone to demonstrate
+                  a GAN model we built and its ability to generate molecules in
+                  Spring of 2025!
+                </strong>
+              </p>
+              <p style="color: #ecf0f1; font-size: 1.1rem; line-height: 1.6;">
+                Big thank you to the contributors that made this possible:
+              </p>
+              <ul style="color: #ecf0f1; font-size: 1.1rem; line-height: 1.6; margin-top: 1rem; list-style-type: none;">
+                <li style="margin-bottom: 0.5rem; color: #3498db;">Dr. Fendt</li>
+                <li style="margin-bottom: 0.5rem; color: #3498db;">Dr. Rivas</li>
+                <li style="margin-bottom: 0.5rem; color: #3498db;">Kaleb Ray</li>
+                <li style="margin-bottom: 0.5rem; color: #3498db;">Seth Kacura</li>
+                <li style="margin-bottom: 0.5rem; color: #3498db;">Ethan Triem</li>
+                <li style="margin-bottom: 0.5rem; color: #3498db;">Aaron Sierra</li>
+                <li style="margin-bottom: 0.5rem; color: #3498db;">David Day</li>
+                <li style="margin-bottom: 0.5rem; color: #3498db;">Cheyenne Garza</li>
+              </ul>
+            </div>
           </div>
           <div class="column is-6 right-image aos-init aos-animate" data-aos="fade-left">
-            <img class="is-rounded" src="/static/images/Molecule.png" alt="">
+            <img class="is-rounded" src="/static/images/Molecule.png" alt="" 
+                 style="border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); width: 100%; height: auto;">
           </div>
         </div>
       </div>
@@ -179,7 +187,7 @@
               <i class="fad fa-meteor fa-3x"></i>
               <hr>
               <h2>
-                <strong>1. Generator</strong>: Learns patterns from real data and tries to create convincing “fakes.”
+                <strong>1. Generator</strong>: Learns patterns from real data and tries to create convincing "fakes."
               </h2>
             </div>
             <div class="column is-4 has-text-centered aos-init" data-aos="fade-in" data-aos-easing="linear">
@@ -233,23 +241,33 @@
     </div>
     <!-- End Services Content -->
     <!-- Begin Skills Content -->
-    <div class="section-light skills" id="how-it-works">
+    <div class="section-light skills" id="how-it-works" style="background-color: #2c3e50; padding: 3rem 0;">
       <div class="container">
         <div class="columns is-multiline">
           <div class="column is-12 about-me">
-            <h1 class="title has-text-centered section-title">How it works</h1>
+            <h1 class="title has-text-centered section-title" style="color: #ecf0f1; font-size: 2.5rem; margin-bottom: 2rem;">
+              How it works
+            </h1>
           </div>
           <!-- Left Column: Image -->
           <div class="column is-6 left-image aos-init" data-aos="fade-right">
-            <img class="is-rounded" src="/static/images/mole2.png" alt="How it works illustration">
+            <img class="is-rounded" src="/static/images/mole2.png" alt="How it works illustration" 
+                 style="border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
           </div>
           <!-- Right Column: Text -->
           <div class="column is-6 has-vertically-aligned-content aos-init" data-aos="fade-left">
-            <p>
-              Just tweak the values to edit your molecule generation, then hit the generate button to watch your
-              molecule
-              come to life!
-            </p>
+            <div style="background: rgba(236, 240, 241, 0.1); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              <p style="color: #ecf0f1; font-size: 1.2rem; line-height: 1.6; margin-bottom: 1rem;">
+                Just tweak the values to edit your molecule generation, then hit the generate button to watch your
+                molecule come to life!
+              </p>
+              <ul style="color: #ecf0f1; font-size: 1.1rem; line-height: 1.6; margin-top: 1.5rem; list-style-type: disc; margin-left: 1.5rem;">
+                <li style="margin-bottom: 0.8rem;">Adjust the <strong style="color: #3498db;">Mean</strong> to control the average characteristics of generated molecules</li>
+                <li style="margin-bottom: 0.8rem;">Use <strong style="color: #3498db;">Variance</strong> to determine how much the molecules can deviate from the mean</li>
+                <li style="margin-bottom: 0.8rem;">The <strong style="color: #3498db;">Range</strong> parameter sets boundaries for molecular properties</li>
+                <li style="margin-bottom: 0.8rem;">Control molecular diversity with the <strong style="color: #3498db;">Temperature</strong> parameter</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -259,52 +277,200 @@
     <!-- Begin Work Content -->
     <!-- Begin Contact Content -->
     <!-- Title -->
-<div class="column is-12">
-  <h1 id="mol-Title" class="title has-text-centered section-title"
-      style="margin-top: 2rem; position: relative; z-index: 3;">
-      <!-- FIXED: added margin-top and z-index to ensure it's above the viewer -->
-    Molecule Viewer
-  </h1>
-</div>
-
-<!-- Buttons Container -->
-<div class="column is-12">
-  <div class="button-container" 
-       style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 3;">
-       <!-- FIXED: z-index to float above the viewer -->
-    <div id="mol-title" style="margin-bottom: 0.5rem;"></div>
-    <button onclick="switchView('3d')" class="button toggle-button">Show 3D</button>
-    <button onclick="switchView('2d')" class="button toggle-button">Show 2D</button>
-  </div>
-</div>
-
-<!-- Viewer Container -->
-<div class="column is-12">
-  <div id="viewer-container" 
-       style="text-align: center; position: relative; z-index: 1; margin-top: 5rem;">
-       <!-- FIXED: pushed viewer lower with margin-top -->
-
-    <div id="viewer" 
-         style="margin: 0 auto; width: 60%; height: 400px; position: relative; display: block;">
-         <!-- FIXED: use relative instead of absolute to avoid overlapping -->
+<div class="section-dark" id="molecule-viewer" style="background-color: #2c3e50; padding: 4rem 0;">
+  <div class="container">
+    <div class="column is-12">
+      <h1 class="title has-text-centered section-title" style="color: #ecf0f1; font-size: 2.5rem; margin-bottom: 3rem; position: relative; z-index: 3;">
+        Molecule Viewer
+      </h1>
     </div>
 
-    <canvas id="viewer2d" 
-            style="width: 50%; max-width: 400px; display: none; margin: 0 auto; display: block;">
-    </canvas>
+    <!-- Sliders Container -->
+    <div class="column is-12">
+      <div class="sliders-container" style="margin: 2rem auto; width: 80%; max-width: 1200px; padding: 2rem; background: rgba(236, 240, 241, 0.1); border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <div class="field" style="margin-bottom: 2rem;">
+          <label class="label" style="color: #ecf0f1; font-size: 1.5rem; margin-bottom: 1rem;">Mean</label>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <input type="range" class="slider" id="meanSlider" min="-10" max="10" value="0" step="0.1" 
+                   style="flex-grow: 1; height: 20px; -webkit-appearance: none; background: linear-gradient(to right, #3498db 0%, #3498db 50%, #ecf0f1 50%, #ecf0f1 100%); border-radius: 10px; outline: none;">
+            <span id="meanValue" style="color: #ecf0f1; font-size: 1.2rem; min-width: 60px; text-align: center;">0</span>
+          </div>
+        </div>
+        
+        <div class="field" style="margin-bottom: 2rem;">
+          <label class="label" style="color: #ecf0f1; font-size: 1.5rem; margin-bottom: 1rem;">Variance</label>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <input type="range" class="slider" id="varianceSlider" min="0" max="10" value="1" step="0.1"
+                   style="flex-grow: 1; height: 20px; -webkit-appearance: none; background: linear-gradient(to right, #3498db 0%, #3498db 50%, #ecf0f1 50%, #ecf0f1 100%); border-radius: 10px; outline: none;">
+            <span id="varianceValue" style="color: #ecf0f1; font-size: 1.2rem; min-width: 60px; text-align: center;">1</span>
+          </div>
+        </div>
+        
+        <div class="field" style="margin-bottom: 2rem;">
+          <label class="label" style="color: #ecf0f1; font-size: 1.5rem; margin-bottom: 1rem;">Range</label>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <input type="range" class="slider" id="rangeSlider" min="0" max="100" value="50" step="1"
+                   style="flex-grow: 1; height: 20px; -webkit-appearance: none; background: linear-gradient(to right, #3498db 0%, #3498db 50%, #ecf0f1 50%, #ecf0f1 100%); border-radius: 10px; outline: none;">
+            <span id="rangeValue" style="color: #ecf0f1; font-size: 1.2rem; min-width: 60px; text-align: center;">50</span>
+          </div>
+        </div>
+        
+        <div class="field" style="margin-bottom: 2rem;">
+          <label class="label" style="color: #ecf0f1; font-size: 1.5rem; margin-bottom: 1rem;">Temperature</label>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <input type="range" class="slider" id="tempSlider" min="0" max="2" value="1" step="0.1"
+                   style="flex-grow: 1; height: 20px; -webkit-appearance: none; background: linear-gradient(to right, #3498db 0%, #3498db 50%, #ecf0f1 50%, #ecf0f1 100%); border-radius: 10px; outline: none;">
+            <span id="tempValue" style="color: #ecf0f1; font-size: 1.2rem; min-width: 60px; text-align: center;">1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons Container -->
+    <div class="column is-12">
+      <div class="button-container" style="text-align: center; margin: 2rem 0; position: relative; z-index: 3;">
+        <div id="mol-title" style="margin-bottom: 1rem; color: #ecf0f1;"></div>
+        <button onclick="switchView('3d')" class="button toggle-button" 
+                style="background-color: #3498db; color: white; margin: 0 0.5rem; padding: 0.5rem 2rem; border-radius: 6px; border: none; transition: all 0.3s ease;">
+          Show 3D
+        </button>
+        <button onclick="switchView('2d')" class="button toggle-button"
+                style="background-color: #3498db; color: white; margin: 0 0.5rem; padding: 0.5rem 2rem; border-radius: 6px; border: none; transition: all 0.3s ease;">
+          Show 2D
+        </button>
+      </div>
+    </div>
+
+    <!-- Viewer Container -->
+    <div class="column is-12">
+      <div id="viewer-container" style="text-align: center; position: relative; z-index: 1; margin: 2rem auto; background: rgba(236, 240, 241, 0.05); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); max-width: 1000px;">
+        <div id="viewer" style="margin: 0 auto; width: 100%; height: 500px; position: relative; display: block;"></div>
+        <canvas id="viewer2d" style="width: 60%; max-width: 500px; display: none; margin: 0 auto;"></canvas>
+      </div>
+    </div>
+
+    <!-- Placeholder and Info Sections -->
+    <div class="column is-12">
+      <div id="placeholder" style="text-align: center; margin: 2rem 0;">
+        <p style="color: #ecf0f1; font-size: 1.2rem; margin-bottom: 1rem;">Click "Run" to load the molecule.</p>
+        <button id="runBtn" class="button" 
+                style="background-color: #2ecc71; color: white; padding: 0.75rem 2.5rem; border-radius: 6px; border: none; font-size: 1.1rem; transition: all 0.3s ease;">
+          Run
+        </button>
+      </div>
+      <div id="mol-info" style="text-align: center; color: #ecf0f1; margin-top: 1rem;"></div>
+      <div id="mol-date" style="text-align: center; color: #ecf0f1; margin-top: 0.5rem;"></div>
+      
+      <!-- Score and Publish Section -->
+      <div id="score-section" style="display: none; text-align: center; margin-top: 2rem;">
+        <div style="background: rgba(236, 240, 241, 0.1); padding: 2rem; border-radius: 12px; display: inline-block;">
+          <h2 style="color: #ecf0f1; font-size: 1.5rem; margin-bottom: 1rem;">Molecule Score</h2>
+          <p id="molecule-score" style="color: #2ecc71; font-size: 2rem; font-weight: bold; margin-bottom: 1.5rem;">--</p>
+          
+          <div class="field">
+            <label class="label" style="color: #ecf0f1;">Enter your name to publish:</label>
+            <div class="control" style="max-width: 300px; margin: 0 auto;">
+              <input type="text" id="user-name" class="input" placeholder="Your name">
+            </div>
+          </div>
+          
+          <button id="publishBtn" class="button" 
+                  style="background-color: #3498db; color: white; margin-top: 1rem; padding: 0.75rem 2.5rem; border-radius: 6px; border: none; font-size: 1.1rem; transition: all 0.3s ease;">
+            Publish to Leaderboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Leaderboard Section -->
+      <div class="leaderboard-section" style="text-align: center; margin-top: 3rem;">
+        <div style="background: rgba(236, 240, 241, 0.1); padding: 2rem; border-radius: 12px; display: inline-block;">
+          <h2 style="color: #ecf0f1; font-size: 1.5rem; margin-bottom: 1.5rem;">View Top Molecules</h2>
+          <a href="/leaderboard" class="button" 
+             style="background-color: #3498db; color: white; padding: 0.75rem 2.5rem; border-radius: 6px; border: none; font-size: 1.1rem; transition: all 0.3s ease;">
+            Go to Leaderboard
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-    
-          <!-- Placeholder and Info Sections -->
-          <div class="column is-12">
-            <div id="placeholder" style="text-align: center;">
-              <p>Click "Run" to load the molecule.</p>
-              <button id="runBtn" class="button">Run</button>
-            </div>
-            <div id="mol-info" style="text-align: center"></div>
-            <div id="mol-date" style="text-align: center"></div>
-          </div>
+<style>
+  /* Custom slider styling */
+  input[type="range"].slider {
+    -webkit-appearance: none;
+    height: 20px;
+    background: #ecf0f1;
+    border-radius: 10px;
+    outline: none;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+    width: 100%;
+  }
+
+  input[type="range"].slider:hover {
+    opacity: 1;
+  }
+
+  input[type="range"].slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 35px;
+    height: 35px;
+    background: #3498db;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #ecf0f1;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+  }
+
+  input[type="range"].slider::-webkit-slider-thumb:hover {
+    background: #2980b9;
+    transform: scale(1.1);
+  }
+
+  input[type="range"].slider::-moz-range-thumb {
+    width: 35px;
+    height: 35px;
+    background: #3498db;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #ecf0f1;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+  }
+
+  input[type="range"].slider::-moz-range-thumb:hover {
+    background: #2980b9;
+    transform: scale(1.1);
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .hero-menu-desktop a {
+    color: #ecf0f1;
+    transition: color 0.3s ease;
+  }
+  
+  .hero-menu-desktop a:hover {
+    color: #3498db;
+  }
+  
+  .hero-menu-desktop ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+  }
+  
+  .hero-menu-desktop li {
+    padding: 0.5rem 1rem;
+  }
+</style>
         </div>
       </div>
     </div>
@@ -336,21 +502,111 @@
   </script>
   <script>
     $(document).ready(function () {
+      // Initialize slider values
+      const sliders = {
+        mean: document.getElementById('meanSlider'),
+        variance: document.getElementById('varianceSlider'),
+        range: document.getElementById('rangeSlider'),
+        temp: document.getElementById('tempSlider')
+      };
+
+      function updateSliderBackground(slider) {
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        const val = parseFloat(slider.value);
+        const percentage = ((val - min) / (max - min)) * 100;
+        const boundedPercentage = Math.min(100, Math.max(0, percentage));
+        
+        slider.style.background = `linear-gradient(to right, #3498db 0%, #3498db ${boundedPercentage}%, #ecf0f1 ${boundedPercentage}%, #ecf0f1 100%)`;
+      }
+
+      // Initialize all sliders
+      Object.entries(sliders).forEach(([key, slider]) => {
+        const valueDisplay = document.getElementById(`${key}Value`);
+        
+        // Set initial value display and background
+        valueDisplay.textContent = parseFloat(slider.value).toFixed(1);
+        updateSliderBackground(slider);
+        
+        // Remove any existing event listeners
+        slider.replaceWith(slider.cloneNode(true));
+        
+        // Get the new slider reference after replacement
+        sliders[key] = document.getElementById(slider.id);
+        
+        // Add the event listener to the new slider
+        sliders[key].addEventListener('input', function() {
+          valueDisplay.textContent = parseFloat(this.value).toFixed(1);
+          updateSliderBackground(this);
+        });
+      });
+
+      let currentScore = null;
+
       $("#runBtn").click(function () {
-        $("#placeholder").fadeOut(); // Hide the placeholder
+        // Get current slider values
+        const params = {
+          mean: parseFloat(sliders.mean.value),
+          variance: parseFloat(sliders.variance.value),
+          range: parseFloat(sliders.range.value),
+          temperature: parseFloat(sliders.temp.value)
+        };
+
+        // Log parameters to console
+        console.log('GAN Parameters:', params);
+
+        $("#placeholder").fadeOut();
 
         $.ajax({
           url: "/run_notebook",
           type: "POST",
-          success: function () {
+          data: JSON.stringify(params),
+          contentType: "application/json",
+          success: function (response) {
             fetchAndRenderMolecule();
-            switchView("3d"); // Default to 3D view
+            switchView("3d");
             fetchMolInfo();
             fetchMolDate();
+            
+            // Display the score
+            currentScore = response.score;
+            $("#molecule-score").text(currentScore.toFixed(2));
+            $("#score-section").fadeIn();
           },
           error: function (err) {
             $("#notebook-output").html("Error: " + err.responseText);
           },
+        });
+      });
+
+      $("#publishBtn").click(function() {
+        const userName = $("#user-name").val().trim();
+        
+        if (!userName) {
+          alert("Please enter your name before publishing.");
+          return;
+        }
+        
+        if (!currentScore) {
+          alert("Please generate a molecule first.");
+          return;
+        }
+        
+        $.ajax({
+          url: "/publish_molecule",
+          type: "POST",
+          data: JSON.stringify({
+            user_name: userName,
+            score: currentScore
+          }),
+          contentType: "application/json",
+          success: function(response) {
+            alert("Successfully published to leaderboard!");
+            window.location.href = "/leaderboard";
+          },
+          error: function(err) {
+            alert("Error publishing molecule: " + err.responseText);
+          }
         });
       });
 
@@ -437,7 +693,7 @@
         viewer.spin(true); // Start the animation
 
         const canvas = viewer.getCanvas(); // Get the canvas element created by 3Dmol.js
-        canvas.style.position = 'center';  // Ensure it’s relative for proper layout
+        canvas.style.position = 'center';  // Ensure it's relative for proper layout
         canvas.style.width = '100%';  // Make the canvas width responsive
         canvas.style.height = '100%'; // Make the canvas height responsive
       }
@@ -531,7 +787,6 @@
         $("#viewer2d").show();
       }
     }
-  </script>
   </script>
 </body>
 

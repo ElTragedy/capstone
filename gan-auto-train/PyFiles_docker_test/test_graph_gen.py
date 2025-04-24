@@ -33,7 +33,7 @@ class test_GraphGenerator(tf.keras.Model):
 
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
 
-    def call(self, z):
+    """def call(self, z):
         batch_size = tf.shape(z)[0]
 
         output = self.mlp(z)
@@ -56,7 +56,52 @@ class test_GraphGenerator(tf.keras.Model):
         node_features = tf.gather(valid_atom_types, node_features)
         node_features = tf.cast(node_features, tf.float32)
 
-        return adj, node_features
+        return adj, node_features"""
+    
+    def call(self, z):
+        batch_size = tf.shape(z)[0]
+
+        output = self.mlp(z)
+
+        adj_flat = output[:, :self.num_nodes * self.num_nodes]
+        adj_flat = tf.nn.sigmoid(adj_flat)
+        node_feature_flat = output[:, self.num_nodes * self.num_nodes:]
+
+        adj = tf.reshape(adj_flat, (batch_size, self.num_nodes, self.num_nodes))
+        adj = (adj + tf.transpose(adj, perm=[0, 2, 1])) / 2
+        adj = tf.nn.softmax(adj, axis=-1)
+
+        valid_atom_types = tf.constant([1, 6, 7, 8, 9], dtype=tf.int64)
+
+        # Compute node features for the discriminator (one-hot encoded)
+        node_features = tf.reshape(node_feature_flat, (batch_size, self.num_nodes, self.node_features))
+        node_features = tf.nn.softmax(node_features, axis=-1)  # Probabilities over atom types
+        # Convert to indices for atomic numbers
+        node_indices = tf.argmax(node_features, axis=-1)  # Shape: (batch_size, num_nodes)
+        atomic_numbers = tf.gather(valid_atom_types, node_indices)  # Shape: (batch_size, num_nodes)
+        # Convert node_features to one-hot encoded format for the discriminator
+        node_features = tf.one_hot(node_indices, depth=self.node_features, dtype=tf.float32)  # Shape: (batch_size, num_nodes, node_features)
+
+        # Post-process adjacency matrix to ensure hydrogens are connected
+        hydrogen_mask = tf.cast(tf.equal(atomic_numbers, 1), tf.float32)
+        for b in range(batch_size):
+            for i in range(self.num_nodes):
+                if hydrogen_mask[b, i] == 1:
+                    connections = tf.reduce_sum(adj[b, i, :])
+                    if connections < 0.5:
+                        adj_row = adj[b, i, :]
+                        adj_row = tf.where(tf.range(self.num_nodes) == i, tf.zeros_like(adj_row), adj_row)
+                        max_idx = tf.argmax(adj_row, axis=-1)
+                        adj = tf.tensor_scatter_nd_update(
+                            adj,
+                            [[b, i, max_idx], [b, max_idx, i]],
+                            [0.9, 0.9]
+                        )
+
+        adj = tf.cast(adj, tf.float32)
+        atomic_numbers = tf.cast(atomic_numbers, tf.float32)
+
+        return adj, node_features, atomic_numbers
 
     def loss_function(self, real_output, fake_output):
         loss_func = tf.keras.losses.BinaryCrossentropy(from_logits=False)
@@ -66,7 +111,7 @@ class test_GraphGenerator(tf.keras.Model):
         logits = self.mlp(z)
         return tf.nn.log_softmax(logits)
 
-    def fit(self, dataset, discriminator, train_smiles, SAVE_EVERY, OUTPUT_DIR, epochs = 10):
+    def fit(self, dataset, discriminator, train_smiles, SAVE_EVERY, OUTPUT_DIR, epochs=10):
         d_loss_list = []
         g_loss_list = []
         r_loss_list = []
@@ -75,22 +120,17 @@ class test_GraphGenerator(tf.keras.Model):
         for epoch in range(epochs):
             for batch_idx, (real_node_features, real_adj) in enumerate(dataset):
                 z = tf.random.normal([tf.shape(real_node_features)[0], self.latent_dim])
-                gen_adj, gen_node_features = self.call(z)
+                gen_adj, gen_node_features, gen_atomic_numbers = self.call(z)
 
                 with tf.GradientTape() as tape:
                     fake_output = discriminator.call(gen_adj, gen_node_features)
                     real_output = discriminator.call(real_adj, real_node_features)
 
-                    # Label smoothing test
                     real_labels = tf.ones_like(real_output) * 0.9
                     fake_labels = tf.zeros_like(fake_output) + 0.1
 
-                    # Label switching test
-                    """if np.random.rand() < 0.05:
-                        real_labels, fake_labels = fake_labels, real_labels"""
-
                     d_loss = self.loss_function(real_labels, real_output) + \
-                             self.loss_function(fake_labels, fake_output)
+                            self.loss_function(fake_labels, fake_output)
 
                     d_loss_list.append(d_loss.numpy())
 
@@ -101,21 +141,45 @@ class test_GraphGenerator(tf.keras.Model):
                     z = tf.random.normal([tf.shape(real_node_features)[0], self.latent_dim])
 
                     with tf.GradientTape() as tape:
-                        gen_adj, gen_node_features = self(z)
-                        gen_smiles_list.append(Chem.MolToSmiles(adjacency_matrix_to_mol(gen_adj, gen_node_features)))
-                        curr_mol = adjacency_matrix_to_mol(gen_adj, gen_node_features)
-                        curr_mol = Chem.RemoveHs(curr_mol) # Remove extraneous hydrogens
-                        total_reward = rewards.calculate_total_reward(curr_mol, gen_smiles_list, train_smiles)
-                        alpha = 0.99  
-                        if hasattr(self, "reward_baseline"):
-                            self.reward_baseline = alpha * self.reward_baseline + (1 - alpha) * total_reward
-                        else:
-                            self.reward_baseline = total_reward
+                        gen_adj, gen_node_features, gen_atomic_numbers = self(z)
+                        batch_rewards = []
+                        batch_size = gen_adj.shape[0]
+                        gen_adj_np = gen_adj.numpy()
+                        gen_atomic_numbers_np = gen_atomic_numbers.numpy()
 
-                        advantage = total_reward - self.reward_baseline
+                        for i in range(batch_size):
+                            adj_i = gen_adj_np[i]
+                            nodes_i = gen_atomic_numbers_np[i]
+
+                            try:
+                                curr_mol = adjacency_matrix_to_mol(adj_i, nodes_i)
+                                if curr_mol is None or curr_mol.GetNumAtoms() == 0:
+                                    print("Invalid molecule generated.")
+                                    continue
+                                curr_mol = Chem.RemoveHs(curr_mol)
+                                gen_smiles = Chem.MolToSmiles(curr_mol, canonical=True, allHsExplicit=False)
+                                gen_smiles_list.append(gen_smiles)
+
+                                total_reward = rewards.calculate_total_reward(curr_mol, gen_smiles_list, train_smiles)
+                                batch_rewards.append(total_reward)
+                            except Exception as e:
+                                print(f"Failed to process molecule {i} in batch: {e}")
+                                continue
+
+                        if not batch_rewards:
+                            continue
+
+                        batch_reward = np.mean(batch_rewards)
+                        alpha = 0.99
+                        if hasattr(self, "reward_baseline"):
+                            self.reward_baseline = alpha * self.reward_baseline + (1 - alpha) * batch_reward
+                        else:
+                            self.reward_baseline = batch_reward
+
+                        advantage = batch_reward - self.reward_baseline
                         r_loss = tf.convert_to_tensor(advantage, dtype=tf.float32)
                         real_r_loss = r_loss.numpy()
-                        r_loss = tf.reshape(r_loss, [1])  
+                        r_loss = tf.reshape(r_loss, [1])
 
                         fake_output = discriminator(gen_adj, gen_node_features)
 
@@ -134,8 +198,8 @@ class test_GraphGenerator(tf.keras.Model):
                     cp.save_checkpoint(self, discriminator, epoch + 1, OUTPUT_DIR)
                     print(f"Epoch {epoch+1}/{epochs}",
                         f"D Loss: {d_loss.numpy():.4f}",
-                        f"G Loss: {g_loss.numpy():.4f}", 
-                        f"R Loss: {real_r_loss:.4f}", 
+                        f"G Loss: {g_loss.numpy():.4f}",
+                        f"R Loss: {real_r_loss:.4f}",
                         f"Scaled Loss: {scaled_loss.numpy():.4f}")
 
         return d_loss_list, g_loss_list, r_loss_list, scl_loss_list

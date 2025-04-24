@@ -6,11 +6,7 @@ import re
 import ast
 import numpy as np
 from rdkit import Chem
-#from PyFiles import hierarchical_discriminator as hd
-#from PyFiles import hierarchical_discriminator_nd as hd_nd
-#from PyFiles import rewards as rds
-#from PyFiles import preprocess as pp
-#from PyFiles import test_graph_gen as gen
+import json
 
 sys.path.insert(0, os.path.abspath('./PyFiles_docker_test'))
 
@@ -64,15 +60,31 @@ def get_dataset():
     }
     mapped_features = [0] * len(sliced_features)
 
+    """for i in range(len(sliced_features)):
+        mapped_features[i] = [feature_map[value] for value in sliced_features[i]]
+
+    adj_matrices = data['adj_matrix'].values
+
+    for i in range(len(adj_matrices)):
+        train_smiles.append(Chem.MolToSmiles(adj(adj_matrices[i], mapped_features[i])))"""
+
     for i in range(len(sliced_features)):
         mapped_features[i] = [feature_map[value] for value in sliced_features[i]]
 
     adj_matrices = data['adj_matrix'].values
 
     for i in range(len(adj_matrices)):
-        train_smiles.append(Chem.MolToSmiles(adj(adj_matrices[i], mapped_features[i])))
+        try:
+            node_count = len(mapped_features[i])
+            trimmed_adj = adj_matrices[i][:node_count, :node_count]
+            mol = adj(trimmed_adj, mapped_features[i])
+            if mol is not None:
+                smiles = Chem.MolToSmiles(mol)
+                train_smiles.append(smiles)
+        except Exception as e:
+            print(f"[Warning] Failed to convert molecule at index {i}: {e}")
 
-    data['adj_matrix'] = data['adj_matrix'].apply(lambda x: pp.pad_adj_matrix(x, max_size))
+        data['adj_matrix'] = data['adj_matrix'].apply(lambda x: pp.pad_adj_matrix(x, max_size))
 
     adj_matrices = np.stack(data['adj_matrix'].values)
     one_hot_node_features = np.stack(one_hot_node_features)
@@ -80,3 +92,17 @@ def get_dataset():
     dataset = pp.create_dataset(adj_matrices, one_hot_node_features, batch_size = 32)
 
     return dataset, train_smiles, max_size, num_features
+
+if __name__ == "__main__":
+    dataset, train_smiles, max_size, num_features = get_dataset()
+
+    smiles_df = pd.DataFrame({'smiles': train_smiles})
+    smiles_df.to_csv('data/train_smiles.csv', index=False)
+    dataset = pd.DataFrame(dataset)
+    dataset.to_csv('data/dataset.csv', index=False)
+
+
+    with open('data/graph_config.json', 'w') as f:
+        json.dump({'max_size': max_size, 'num_features': num_features}, f)
+    print("[Saved] graph_config.json")
+

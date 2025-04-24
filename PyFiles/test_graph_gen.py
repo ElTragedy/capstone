@@ -11,7 +11,7 @@ import warnings
 warnings.filterwarnings('ignore')
 tf.config.run_functions_eagerly(True)
 
-class test_GraphGenerator(tf.keras.Model):
+class test_GraphGenerator2(tf.keras.Model):
     def __init__(self, num_nodes, node_features, latent_dim):
         super().__init__()
 
@@ -66,7 +66,8 @@ class test_GraphGenerator(tf.keras.Model):
         logits = self.mlp(z)
         return tf.nn.log_softmax(logits)
 
-    def fit(self, dataset, discriminator, train_smiles, SAVE_EVERY, OUTPUT_DIR, epochs = 10):
+    #def fit(self, dataset, discriminator, train_smiles, SAVE_EVERY, OUTPUT_DIR, epochs = 10):
+    def fit(self, dataset, discriminator, train_smiles, epochs = 10):
         d_loss_list = []
         g_loss_list = []
         r_loss_list = []
@@ -130,12 +131,13 @@ class test_GraphGenerator(tf.keras.Model):
                         gradients = tape.gradient(scaled_loss, self.trainable_variables)
                         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
 
-                if (epoch + 1) % SAVE_EVERY == 0:
+                """if (epoch + 1) % SAVE_EVERY == 0:
                     cp.save_checkpoint(self, discriminator, epoch + 1, OUTPUT_DIR)
                     print(f"Epoch {epoch+1}/{epochs}",
                         f"D Loss: {d_loss.numpy():.4f}",
                         f"G Loss: {g_loss.numpy():.4f}", 
                         f"R Loss: {real_r_loss:.4f}", 
                         f"Scaled Loss: {scaled_loss.numpy():.4f}")
-
+"""
         return d_loss_list, g_loss_list, r_loss_list, scl_loss_list
+

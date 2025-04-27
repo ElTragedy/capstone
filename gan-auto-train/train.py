@@ -20,7 +20,7 @@ os.makedirs(OUTPUT_DIR, exist_ok = True)
 
 EPOCHS = 1000
 BATCH_SIZE = 32
-SAVE_EVERY = 25
+SAVE_EVERY = 1
 LATENT_DIM = 256
 
 dataset, train_smiles, NUM_NODES, NUM_FEATURES, adj_matrices, one_hot_node_features, node_counts, mapped_features = get_dataset2.get_dataset()

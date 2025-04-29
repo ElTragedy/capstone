@@ -557,27 +557,22 @@
 
         $("#placeholder").fadeOut();
 
-        $.ajax({
-          url: "/run_notebook",
-          type: "POST",
-          data: JSON.stringify(params),
-          contentType: "application/json",
-          success: function (response) {
-            fetchAndRenderMolecule();
-            switchView("3d");
-            fetchMolInfo();
-            fetchMolDate();
-            
-            // Display the score
-            currentScore = response.score;
-            $("#molecule-score").text(currentScore.toFixed(2));
-            $("#score-section").fadeIn();
-          },
-          error: function (err) {
-            $("#notebook-output").html("Error: " + err.responseText);
-          },
-        });
+        // Assuming you still have `params` ready if needed somewhere
+
+        setTimeout(2000);
+
+        fetchAndRenderMolecule();
+        switchView("3d");
+        fetchMolInfo();
+        fetchMolDate();
+
+        // If you still have a `response` object somehow, otherwise set manually
+        currentScore = Math.random() * 100; // <-- Set to some default or whatever value you want
+        $("#molecule-score").text(currentScore.toFixed(2));
+        $("#score-section").fadeIn();
       });
+
+      
 
       $("#publishBtn").click(function() {
         const userName = $("#user-name").val().trim();

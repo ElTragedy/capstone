@@ -1,0 +1,115 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{caption}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Graph-Based Molecular Generation via Adversarial Learning with
+Hierarchical Discriminators and Reward-Driven Objectives}
+
+\author{\IEEEauthorblockN{Kaleb Ray}
+\IEEEauthorblockA{\textit{Baylor University}\\
+Waco, TX \\
+kaleb\_ray1@baylor.edu}
+\AND
+\\
+\IEEEauthorblockN{Ethan Triem}
+\IEEEauthorblockA{\textit{Baylor University}\\
+Waco, TX \\
+ethan\_triem2@baylor.edu}
+\and
+\IEEEauthorblockN{Seth Kacura}
+\IEEEauthorblockA{\textit{Baylor University}\\
+Waco, TX \\
+seth\_kacura1@baylor.edu}
+\AND
+\\
+\IEEEauthorblockN{Aaron Sierra}
+\IEEEauthorblockA{\textit{Baylor University}\\
+Waco, TX \\
+aaron\_sierra1@baylor.edu}
+\and
+\IEEEauthorblockN{David Day}
+\IEEEauthorblockA{\textit{Baylor University}\\
+Waco, TX \\
+david\_day1@baylor.edu}
+\AND
+\\
+\IEEEauthorblockN{Cheyenne Garza}
+\IEEEauthorblockA{\textit{Baylor University}\\
+Waco, TX \\
+cheyenne\_garza1@baylor.edu}
+}
+
+\maketitle
+
+\begin{abstract}
+Recent advances in deep-generative models have allowed the generation of chemically valid and novel molecules with desirable properties for further investigation. In this work, we provide such a model, integrating generative adversarial networks (GANs), hierarchical graph discrimination, and reinforcement learning. Our graph-based generator generates molecular graphs in the form of adjacency and node feature matrices. To improve robustness and stability during training, we implement a hierarchical differentiable pooling (DIFFPOOL)-based discriminator. This type of discriminator allows our model to learn coarse-grained graph representations during training. Additionally, we introduce a reinforcement learning component in which a policy network receives reward signals based on predicted chemical properties, guiding the generator toward structures with high drug-likeness and other target metrics. In evaluating our approach, we look for validity, uniqueness, novelty, and alignment with drug-likeness metric scores. The results demonstrate improved generation quality and training stability compared to baseline graph GANs, particularly when incorporating DIFFPOOL and reinforcement-guided reward shaping. Our findings suggest that the combination of hierarchical discrimination with reinforcement learning shows a positive trajectory for property-driven molecular design in drug discovery and materials science.
+\end{abstract}
+
+\begin{IEEEkeywords}
+GAN, Hierarchical discriminator, DIFFPOOL, Reinforcement learning, Validity, Uniqueness, Novelty, Drug-likeness
+\end{IEEEkeywords}
+
+\begin{table}[H]
+    \centering
+    \caption*{Nomenclature}
+    \begin{tabular}{l r}
+        \begin{math} A \in \mathbb{R}^{nxn} \end{math} & adjacency matrix \\
+        \begin{math} T = [t_1, t_2,...,t_n] \in \mathbb{Z}^n \end{math} & atomic numbers (node features) 
+        \\
+        \begin{math} B \in \mathbb{Z}^{nxn} \end{math} & bond order matrix (optional) 
+        \\
+        \begin{math} G = (V, E)\end{math} & molecular graph with vertices V and edges E 
+    \end{tabular}
+\end{table}
+
+\section{Introduction}
+In our research, we used the QM9 dataset to train a GAN generator working alongside a hierarchical discriminator to generate chemically valid and novel molecules for scientific study. We used two different versions of the hierarchical discriminator, one with DIFFPOOL, and one without. In association with the generator and discriminator, we also implement a reward policy network to encourage the model's generation. The dataset we used, QM9, contained the following variables: mol\_id, smiles, A, B, C, mu, alpha, homo, lumo, gap, r2, zpve, u0, u298, h298, g298, cv, u0\_atom, u298\_atom, h298\_atom, g298\_atom, Morgan\_fingerprint, adj\_matrix, node\_features, and node\_count. The variables that are significant for this work are adj\_matrix, node\_features, and node\_count. These variables define the molecules that are fed into the generator during training. The adjacency matrix, adj\_matrix, contains information on which bonds are present inside the molecule. The node features, node\_features, contain information on which atoms are present within the molecule. In this study, we analyze the validity, novelty, uniqueness, and drug-likeness of molecules produced by the generator. The validity is based on whether or not the generated molecule is chemically valid, uniqueness is based on similarity of the generated molecule to previous molecules, novelty is determined by whether or not a similar molecule is already present within the training data, and drug-likeness is concerned with the similarity of the molecule generated to common drug-like molecules. 
+
+\section{Literary Review}
+
+\section{Methods}
+\subsection{Adjacency Matrix to Molecule}
+
+\subsubsection{Vertex Set (Atoms)}
+Each atom is represented by a vertex:
+\begin{center}
+\begin{math} 
+V = \{v_i = Atom(t_i) | i = 1, 2,...,n\}
+\end{math}
+\end{center}
+Optionally, if chirality tags are given:
+\begin{center}
+\begin{math}
+Chiral(v_i) = c_i \; for \; i \in C \subseteq \{1,...,n\}
+\end{math}
+\end{center}
+
+\subsubsection{}
+
+\section{Ease of Use}
+
+\subsection{Maintaining the Integrity of the Specifications}
+
+The IEEEtran class file is used to format your paper and style the text. All margins, 
+column widths, line spaces, and text fonts are prescribed; please do not 
+alter them. You may note peculiarities. For example, the head margin
+measures proportionately more than is customary. This measurement 
+and others are deliberate, using specifications that anticipate your paper 
+as one part of the entire proceedings, and not as an independent document. 
+Please do not revise any of the current designations.
+
+\section{Prepare Your Paper Before Styling}
+Before you begin to format your paper, first write and save the content as a 
+separate text file. Complete all content and organizational editing before 
+formatting. Please note sections \ref{AA}--\ref{SCM} below for more information on 

@@ -95,7 +95,44 @@ Chiral(v_i) = c_i \; for \; i \in C \subseteq \{1,...,n\}
 \end{math}
 \end{center}
 
-\subsubsection{}
+\subsubsection{Edge Set (Bonds)}
+For all i \begin{math} < \end{math} j:
+\begin{center}
+\begin{math}
+\text{If} \; A_{ij} > \tau \; (\text{threshold, e.g.,} \; 0.5): \\
+o_{ij} = \begin{cases}
+    B_{ij}, & \text{if} B_{ij} > 0 \\
+    1, & \text{otherwise}
+\end{cases} \\
+E \ni e_{ij} = (v_i, v_j, \beta (o_{ij}))
+\end{math}
+\end{center}
+Where \begin{math}\beta(o) \end{math} maps bond order to bond type:
+\begin{center}
+\begin{math}
+    \beta (o) = \begin{cases}
+    \text{\uppercase{single}}, & o=1 \\
+    \text{\uppercase{double}}, & o=2 \\
+    \text{\uppercase{triple}}, & o=3 \\
+    \text{\uppercase{aromatic}}, & o=4 \\
+    \text{undefined}, & \text{otherwise}
+    \end{cases}
+\end{math}
+\end{center}
+
+\subsubsection{Isolated Hydrogen Handling}
+Let:
+\begin{center}
+\begin{math}
+H = {i | t_i = 1 \wedge deg(v_i) = 0}
+\end{math}
+\end{center}
+For each h \begin{math} \in \end{math} H:
+\begin{center}
+\begin{math}
+    j^* = 
+\end{math}
+\end{center}
 
 \section{Ease of Use}
 

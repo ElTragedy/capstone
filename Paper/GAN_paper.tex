@@ -74,7 +74,23 @@ GAN, Hierarchical discriminator, DIFFPOOL, Reinforcement learning, Validity, Uni
 \end{table}
 
 \section{Introduction}
-In our research, we used the QM9 dataset to train a GAN generator working alongside a hierarchical discriminator to generate chemically valid and novel molecules for scientific study. We used two different versions of the hierarchical discriminator, one with DIFFPOOL, and one without. In association with the generator and discriminator, we also implement a reward policy network to encourage the model's generation. The dataset we used, QM9, contained the following variables: mol\_id, smiles, A, B, C, mu, alpha, homo, lumo, gap, r2, zpve, u0, u298, h298, g298, cv, u0\_atom, u298\_atom, h298\_atom, g298\_atom, Morgan\_fingerprint, adj\_matrix, node\_features, and node\_count. The variables that are significant for this work are adj\_matrix, node\_features, and node\_count. These variables define the molecules that are fed into the generator during training. The adjacency matrix, adj\_matrix, contains information on which bonds are present inside the molecule. The node features, node\_features, contain information on which atoms are present within the molecule. In this study, we analyze the validity, novelty, uniqueness, and drug-likeness of molecules produced by the generator. The validity is based on whether or not the generated molecule is chemically valid, uniqueness is based on similarity of the generated molecule to previous molecules, novelty is determined by whether or not a similar molecule is already present within the training data, and drug-likeness is concerned with the similarity of the molecule generated to common drug-like molecules. 
+In our research, we used the QM9 dataset to train a GAN generator working alongside a 
+hierarchical discriminator to generate chemically valid and novel molecules for scientific 
+study. We used two different versions of the hierarchical discriminator, one with DIFFPOOL, 
+and one without. In association with the generator and discriminator, we also implement a 
+reward policy network to encourage the model's generation. The dataset we used, QM9, contained 
+the following variables: mol\_id, smiles, A, B, C, mu, alpha, homo, lumo, gap, r2, zpve, u0, u298, 
+h298, g298, cv, u0\_atom, u298\_atom, h298\_atom, g298\_atom, Morgan\_fingerprint, adj\_matrix, 
+node\_features, and node\_count. The variables that are significant for this work are adj\_matrix, 
+node\_features, and node\_count. These variables define the molecules that are fed into the generator 
+during training. The adjacency matrix, adj\_matrix, contains information on which bonds are present 
+inside the molecule. The node features, node\_features, contain information on which atoms are 
+present within the molecule. In this study, we analyze the validity, novelty, uniqueness, and 
+drug-likeness of molecules produced by the generator. The validity is based on whether or not 
+the generated molecule is chemically valid, uniqueness is based on similarity of the generated 
+molecule to previous molecules, novelty is determined by whether or not a similar molecule is 
+already present within the training data, and drug-likeness is concerned with the similarity of 
+the molecule generated to common drug-like molecules. 
 
 \section{Literary Review}
 
@@ -84,32 +100,35 @@ In our research, we used the QM9 dataset to train a GAN generator working alongs
 \subsubsection{Vertex Set (Atoms)}
 Each atom is represented by a vertex:
 \begin{center}
-\begin{math} 
+\begin{equation} 
 V = \{v_i = Atom(t_i) | i = 1, 2,...,n\}
-\end{math}
+\label{eq:vertex}
+\end{equation}
 \end{center}
 Optionally, if chirality tags are given:
 \begin{center}
-\begin{math}
+\begin{equation}
 Chiral(v_i) = c_i \; for \; i \in C \subseteq \{1,...,n\}
-\end{math}
+\label{eq:chiral}
+\end{equation}
 \end{center}
 
 \subsubsection{Edge Set (Bonds)}
 For all i \begin{math} < \end{math} j:
-\begin{center}
-\begin{math}
-\text{If} \; A_{ij} > \tau \; (\text{threshold, e.g.,} \; 0.5): \\
-o_{ij} = \begin{cases}
-    B_{ij}, & \text{if} B_{ij} > 0 \\
-    1, & \text{otherwise}
-\end{cases} \\
-E \ni e_{ij} = (v_i, v_j, \beta (o_{ij}))
-\end{math}
-\end{center}
+\begin{align}
+    \text{If} \; A_{ij} > \tau: \quad
+    & o_{ij} = 
+    \begin{cases}
+        B_{ij}, & \text{if } B_{ij} > 0 \\
+        1, & \text{otherwise}
+    \end{cases} \notag \\
+    & E \ni e_{ij} = (v_i, v_j, \beta(o_{ij}))
+    \label{eq:bond_definition}
+\end{align}
+    
 Where \begin{math}\beta(o) \end{math} maps bond order to bond type:
 \begin{center}
-\begin{math}
+\begin{equation}
     \beta (o) = \begin{cases}
     \text{\uppercase{single}}, & o=1 \\
     \text{\uppercase{double}}, & o=2 \\
@@ -117,22 +136,63 @@ Where \begin{math}\beta(o) \end{math} maps bond order to bond type:
     \text{\uppercase{aromatic}}, & o=4 \\
     \text{undefined}, & \text{otherwise}
     \end{cases}
-\end{math}
+\label{eq:bond_type}
+\end{equation}
 \end{center}
 
 \subsubsection{Isolated Hydrogen Handling}
 Let:
 \begin{center}
-\begin{math}
+\begin{equation}
 H = {i | t_i = 1 \wedge deg(v_i) = 0}
-\end{math}
+\end{equation}
 \end{center}
 For each h \begin{math} \in \end{math} H:
 \begin{center}
-\begin{math}
-    j^* = 
-\end{math}
+\begin{equation}
+    j^* = \arg\max_{\substack{j \notin H \\ j \ne h}} A_{hj}
+\end{equation}
 \end{center}
+If \begin{math} deg(v_{j^*}) < \text{Valence}_{max}t_{j^*} \end{math}, then:
+\begin{center}
+\begin{equation}
+E \ni e_{hj^*} = (v_h, v_{j^*}, \text{\uppercase{single}})
+\end{equation}
+\end{center}
+Else:
+\begin{center}
+\begin{equation}
+V \leftarrow V \setminus \{ v_h \}
+\end{equation}
+\end{center}
+
+\subsubsection{Molecule}
+The final molecule is:
+\begin{align}
+\begin{equation}
+M = Sanitize(G = (V,\; E))
+\end{equation}
+\end{align}
+
+\subsection{Reward Policy Network}
+\subsubsection{Validity Reward}
+Let $M$ be a candidate molecule derived from $(A, T)$. Let $\text{Valence}_{\max}(t_i)$ be the maximum valence 
+for atom type $t_i$, and let $\deg(v_i)$ be the current explicit valence (degree) of atom $v_i \in V$.
+\begin{figure*}[!t]
+\centering
+\begin{equation}
+R_{\text{validity}}(M) = 
+\begin{cases}
+    -0.5, & \text{if } M \text{ is None or fails sanitization} \\
+    \max\left(0,\; 5 - \left|\sum_{v_i \in V}(\text{Valence}_{\max}(t_i) - \deg(v_i))\right|\right), & \text{otherwise}
+\end{cases}
+\end{equation}
+\hrulefill
+\vspace*{4pt}
+\end{figure*}
+    
+    
+    
 
 \section{Ease of Use}
 

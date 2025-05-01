@@ -2,264 +2,73 @@
 \IEEEoverridecommandlockouts
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsfonts}
+\usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{stfloats}
-
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Graph-Based Molecular Generation via Adversarial Learning with
-Hierarchical Discriminators and Reward-Driven Objectives}
+\title{Conference Paper Title*\\
+{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
+should not be used}
+\thanks{Identify applicable funding agency here. If none, delete this.}
+}
 
-\author{\IEEEauthorblockN{Kaleb Ray}
-\IEEEauthorblockA{\textit{Baylor University}\\
-Waco, TX \\
-kaleb\_ray1@baylor.edu}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
 \and
-\\
-\IEEEauthorblockN{Ethan Triem}
-\IEEEauthorblockA{\textit{Baylor University}\\
-Waco, TX \\
-ethan\_triem2@baylor.edu}
+\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
 \and
-\IEEEauthorblockN{Seth Kacura}
-\IEEEauthorblockA{\textit{Baylor University}\\
-Waco, TX \\
-seth\_kacura1@baylor.edu}
+\IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
 \and
-\\
-\IEEEauthorblockN{Aaron Sierra}
-\IEEEauthorblockA{\textit{Baylor University}\\
-Waco, TX \\
-aaron\_sierra1@baylor.edu}
+\IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
 \and
-\IEEEauthorblockN{David Day}
-\IEEEauthorblockA{\textit{Baylor University}\\
-Waco, TX \\
-david\_day1@baylor.edu}
+\IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
 \and
-\\
-\IEEEauthorblockN{Cheyenne Garza}
-\IEEEauthorblockA{\textit{Baylor University}\\
-Waco, TX \\
-cheyenne\_garza1@baylor.edu}
+\IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
 }
 
 \maketitle
 
 \begin{abstract}
-Recent advances in deep-generative models have allowed the generation of chemically valid and novel molecules with 
-desirable properties for further investigation. In this work, we provide such a model, integrating generative 
-adversarial networks (GANs), hierarchical graph discrimination, and reinforcement learning. Our graph-based 
-generator generates molecular graphs in the form of adjacency and node feature matrices. To improve robustness 
-and stability during training, we implement a hierarchical differentiable pooling (DIFFPOOL)-based discriminator. 
-This type of discriminator allows our model to learn coarse-grained graph representations during training. 
-Additionally, we introduce a reinforcement learning component in which a policy network receives reward signals 
-based on predicted chemical properties, guiding the generator toward structures with high drug-likeness and other 
-target metrics. In evaluating our approach, we look for validity, uniqueness, novelty, and alignment with 
-drug-likeness metric scores. The results demonstrate improved generation quality and training stability compared 
-to baseline graph GANs, particularly when incorporating DIFFPOOL and reinforcement-guided reward shaping. 
-Our findings suggest that the combination of hierarchical discrimination with reinforcement learning shows 
-a positive trajectory for property-driven molecular design in drug discovery and materials science.
+This document is a model and instructions for \LaTeX.
+This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
+or Math in Paper Title or Abstract.
 \end{abstract}
 
 \begin{IEEEkeywords}
-GAN, Hierarchical discriminator, DIFFPOOL, Reinforcement learning, Validity, Uniqueness, Novelty, Drug-likeness
+component, formatting, style, styling, insert
 \end{IEEEkeywords}
 
-\begin{table}[H]
-    \centering
-    \caption*{Nomenclature}
-    \begin{tabular}{l r}
-        \begin{math} A \in \mathbb{R}^{nxn} \end{math} & adjacency matrix \\
-        \begin{math} T = [t_1, t_2,...,t_n] \in \mathbb{Z}^n \end{math} & atomic numbers (node features) 
-        \\
-        \begin{math} B \in \mathbb{Z}^{nxn} \end{math} & bond order matrix (optional) 
-        \\
-        \begin{math} G = (V, E)\end{math} & molecular graph with vertices V and edges E 
-    \end{tabular}
-\end{table}
-
 \section{Introduction}
-In our research, we used the QM9 dataset to train a GAN generator working alongside a 
-hierarchical discriminator to generate chemically valid and novel molecules for scientific 
-study. We used two different versions of the hierarchical discriminator, one with DIFFPOOL, 
-and one without. In association with the generator and discriminator, we also implement a 
-reward policy network to encourage the model's generation. The dataset we used, QM9, contained 
-the following variables: mol\_id, smiles, A, B, C, mu, alpha, homo, lumo, gap, r2, zpve, u0, u298, 
-h298, g298, cv, u0\_atom, u298\_atom, h298\_atom, g298\_atom, Morgan\_fingerprint, adj\_matrix, 
-node\_features, and node\_count. The variables that are significant for this work are adj\_matrix, 
-node\_features, and node\_count. These variables define the molecules that are fed into the generator 
-during training. The adjacency matrix, adj\_matrix, contains information on which bonds are present 
-inside the molecule. The node features, node\_features, contain information on which atoms are 
-present within the molecule. In this study, we analyze the validity, novelty, uniqueness, and 
-drug-likeness of molecules produced by the generator. The validity is based on whether or not 
-the generated molecule is chemically valid, uniqueness is based on similarity of the generated 
-molecule to previous molecules, novelty is determined by whether or not a similar molecule is 
-already present within the training data, and drug-likeness is concerned with the similarity of 
-the molecule generated to common drug-like molecules. 
-
-\section{Literary Review}
-
-\section{Methods}
-\subsection{Adjacency Matrix to Molecule}
-
-\subsubsection{Vertex Set (Atoms)}
-Each atom is represented by a vertex:
-\begin{center}
-    \begin{equation} 
-        V = \{v_i = Atom(t_i) | i = 1, 2,...,n\}
-        \label{eq:vertex}
-    \end{equation}
-\end{center}
-Optionally, if chirality tags are given:
-\begin{center}
-    \begin{equation}
-        Chiral(v_i) = c_i \; for \; i \in C \subseteq \{1,...,n\}
-        \label{eq:chiral}
-    \end{equation}
-\end{center}
-
-\subsubsection{Edge Set (Bonds)}
-For all i \begin{math} < \end{math} j:
-\begin{align}
-    \text{If} \; A_{ij} > \tau: \quad
-    & o_{ij} = 
-    \begin{cases}
-        B_{ij}, & \text{if } B_{ij} > 0 \\
-        1, & \text{otherwise}
-    \end{cases} \notag \\
-    & E \ni e_{ij} = (v_i, v_j, \beta(o_{ij}))
-    \label{eq:bond_definition}
-\end{align}
-    
-Where \begin{math}\beta(o) \end{math} maps bond order to bond type:
-\begin{center}
-    \begin{equation}
-        \beta (o) = \begin{cases}
-        \text{\uppercase{single}}, & o=1 \\
-        \text{\uppercase{double}}, & o=2 \\
-        \text{\uppercase{triple}}, & o=3 \\
-        \text{\uppercase{aromatic}}, & o=4 \\
-        \text{undefined}, & \text{otherwise}
-        \end{cases}
-    \label{eq:bond_type}
-    \end{equation}
-\end{center}
-
-\subsubsection{Isolated Hydrogen Handling}
-Let:
-\begin{center}
-    \begin{equation}
-        H = {i | t_i = 1 \wedge deg(v_i) = 0}
-        \label{eq:iso_hydro}
-    \end{equation}
-\end{center}
-For each h \begin{math} \in \end{math} H:
-\begin{center}
-    \begin{equation}
-        j^* = \arg\max_{\substack{j \notin H \\ j \ne h}} A_{hj}
-        \label{eq:argmax}
-    \end{equation}
-\end{center}
-If \begin{math} deg(v_{j^*}) < \text{Valence}_{max}t_{j^*} \end{math}, then:
-\begin{center}
-    \begin{equation}
-        E \ni e_{hj^*} = (v_h, v_{j^*}, \text{\uppercase{single}})
-        \label{eq:bond_hydro}
-    \end{equation}
-\end{center}
-Else:
-\begin{center}
-    \begin{equation}
-        V \leftarrow V \setminus \{ v_h \}
-        \label{eq:remove_hydro}
-    \end{equation}
-\end{center}
-
-\subsubsection{Molecule}
-The final molecule is:
-\begin{center}
-    \begin{equation}
-        M = Sanitize(G = (V,\; E))
-        \label{eq:molecule}
-    \end{equation}
-\end{center}
-
-\begin{figure*}[!t]
-    \begin{equation}
-    R_{\text{validity}}(M) = 
-    \begin{cases}
-        -0.5, & \text{if } M \text{ is None or fails sanitization} \\
-        \max\left(0,\; 5 - \left|\sum_{v_i \in V}(\text{Valence}_{\max}(t_i) - \deg(v_i))\right|\right), & \text{otherwise}
-    \end{cases}
-    \label{eq:validity}
-    \end{equation}
-\hrulefill
-\vspace*{4pt}
-\end{figure*}
-    
-    
-\subsection{Reward Policy Network}
-\subsubsection{Validity Reward}
-Let $M$ be a candidate molecule derived from $(A, T)$. Let $\text{Valence}_{\max}(t_i)$ be the maximum valence 
-for atom type $t_i$, and let $\deg(v_i)$ be the current explicit valence (degree) of atom $v_i \in V$.
-See Eq.~\ref{eq:validity} for the validity reward function.   
-
-\subsubsection{Stray Hydrogen Reward}
-Let $H\subset V$ be the set of hydrogen atoms, and let deg($v_i$) be the degree of atom $v_i$.
-
-\small{
-    \begin{equation}
-        R_{\text{stray}}(M) = 
-        \begin{cases}
-            -0.5, & \text{if } M \text{ is None or } \exists v_i \in H \text{ such that } \deg(v_i) = 0 \\
-            0.5, & \text{otherwise}
-        \end{cases}
-        \label{eq:stray}
-    \end{equation}
-}    
-
-\subsubsection{Uniqueness Reward}
-Let $\mathcal{G} = \{S_1, S_2,...,S_n\}$ be the list of SMILES strings for previously generated molecules, and let
-$S(M)$ be the SMILES of the current molecule $M$. Let $count_{\mathcal{G}}(S(M))$ be the number of times $S(M)$
-appears in $\mathcal{G}$.
-
-\small{
-    \begin{equation}
-        R_{\text{unique}}(M, G) =
-        \begin{cases}
-            -0.3, & \text{if } R_{\text{validity}}(M) = 0 \\
-            \max\left(0, \min\left(1, 1 - \frac{|G| + 1}{\text{count}_G(S(M))} \right) \right), & \text{otherwise}
-        \end{cases}
-        \label{eq:uniqueness}
-    \end{equation}
-}
-
-\subsubsection{Novelty Reward}
-Let $\mathcal{T} \subset \mathbb{S}$ be the set of training SMILES strings.
-
-\small{
-    \begin{equation}
-        R_{\text{novelty}}(M, T, G) =
-        \begin{cases}
-            -0.3, & \text{if } R_{\text{validity}}(M) = 0 \\
-            -2.5, & \text{if } R_{\text{unique}}(M, G) < 1 \\
-            -0.7, & \text{if } S(M) \in T \\
-            2.3, & \text{otherwise}
-        \end{cases}
-        \label{eq:novelty}
-    \end{equation}        
-}
+This document is a model and instructions for \LaTeX.
+Please observe the conference page limits. 
 
 \section{Ease of Use}
 
@@ -477,4 +286,3 @@ citation first, followed by the original foreign-language citation \cite{b6}.
 IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
 
 \end{document}
-

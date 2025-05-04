@@ -109,19 +109,45 @@ already present within the training data, and drug-likeness is concerned with th
 the molecule generated to common drug-like molecules. 
 
 \section{Literary Review}
-In recent years, AI-driven methods have gained traction in \it{de novo} drug design, offering the potential to generate novel chemical compounds without reliance on predefined molecular databases. These methods offer the potential to eliminate the dependence on existing compound databases and accelerate the drug discovery pipeline with optimized pharmacological properties. 
+In recent years, AI-driven methods have gained traction in \it{de novo} drug design, offering the potential 
+to generate novel chemical compounds without reliance on predefined molecular databases. These methods offer the 
+potential to eliminate the dependence on existing compound databases and accelerate the drug discovery pipeline with 
+optimized pharmacological properties. 
 
-Among the most promising machine learning tools applied to molecular generation are graph-based generative models. Unlike traditional representations such as SMILES (Simplified Molecular Input Line Entry System) strings, graph-based models treat molecules as undirected graphs, where atoms are represented as nodes and chemical bonds as edges. This approach more accurately captures molecular structure and allows for more chemically valid generation processes. Within this domain, Graph Neural Networks (GNNs) and Generative Adversarial Networks (GANs) have become foundational model architectures. 
+Among the most promising machine learning tools applied to molecular generation are graph-based generative models. 
+Unlike traditional representations such as SMILES (Simplified Molecular Input Line Entry System) strings, graph-based 
+models treat molecules as undirected graphs, where atoms are represented as nodes and chemical bonds as edges. This 
+approach more accurately captures molecular structure and allows for more chemically valid generation processes. Within 
+this domain, Graph Neural Networks (GNNs) and Generative Adversarial Networks (GANs) have become foundational model architectures. 
 
-MolGAN, introduced by De Cao and Kipf, represents one of the earliest applications of GANs to molecular graph generation. It combines an implicit generative model with a reinforcement learning objective to generate molecular graphs that are both valid and optimized for specific chemical properties. The model eliminates the need for graph matching or predefined node orders by using an adjacency matrix representation of molecules. Despite demonstrating high chemical validity, MolGAN suffers from limited output diversity due to mode collapse—a common issue in GAN-based models—and lacks structural regularization mechanisms. 
+MolGAN, introduced by De Cao and Kipf[1], represents one of the earliest applications of GANs to molecular graph generation. It 
+combines an implicit generative model with a reinforcement learning objective to generate molecular graphs that are both valid 
+and optimized for specific chemical properties. The model eliminates the need for graph matching or predefined node orders by using 
+an adjacency matrix representation of molecules. Despite demonstrating high chemical validity, MolGAN suffers from limited output 
+diversity due to mode collapse—a common issue in GAN-based models—and lacks structural regularization mechanisms. 
 
-To address these limitations, Guarino et al. proposed DiPol-GAN, an extension of MolGAN that introduces two key innovations. First, it incorporates Differentiable Pooling (DIFFPOOL), a hierarchical pooling mechanism that enables the network to learn coarse-grained representations of molecular graphs. This facilitates hierarchical feature extraction and better captures the global context of molecular structures. Second, the model integrates a reinforcement learning policy gradient framework to further optimize molecular generation based on property-specific reward functions. DiPol-GAN has shown improvements in the generation of property-compliant and structurally diverse molecules, however, it also introduces additional complexity in training and higher computational overhead. 
+To address these limitations, Guarino et al. [2] proposed DiPol-GAN, an extension of MolGAN that introduces two key innovations. First, 
+it incorporates Differentiable Pooling (DIFFPOOL), a hierarchical pooling mechanism that enables the network to learn coarse-grained 
+representations of molecular graphs. This facilitates hierarchical feature extraction and better captures the global context of molecular 
+structures. Second, the model integrates a reinforcement learning policy gradient framework to further optimize molecular generation based
+on property-specific reward functions. DiPol-GAN has shown improvements in the generation of property-compliant and structurally diverse 
+molecules, however, it also introduces additional complexity in training and higher computational overhead. 
 
-Several alternative architectures have also been explored in the literature. For instance, GraphAF, considered by Shi et al., employs autoregressive flow-based modeling to sequentially construct molecular graphs in a chemically valid manner. While this ensures structural integrity during generation, the method can be computationally intensive and less suited to multi-objective optimization. Similarly, latent variable models such as GraphDF, authored by Luo et. Al, attempt to decouple the representation and property optimization process, offering greater interpretability and flexibility, though often at the cost of sample efficiency. 
+Several alternative architectures have also been explored in the literature. For instance, GraphAF, considered by Shi et al.[6], employs 
+autoregressive flow-based modeling to sequentially construct molecular graphs in a chemically valid manner. While this ensures structural 
+integrity during generation, the method can be computationally intensive and less suited to multi-objective optimization. Similarly, latent 
+variable models such as GraphDF, authored by Luo et. Al[7], attempt to decouple the representation and property optimization process, offering 
+greater interpretability and flexibility, though often at the cost of sample efficiency. 
 
-Despite these advancements, open challenges persist. The generation of molecules that are simultaneously valid, diverse, and property-optimized remains non-trivial. Many models struggle with achieving all three objectives concurrently. Additionally, evaluation metrics in molecular generation are often inconsistent, making it difficult to directly compare model performance across studies. Reinforcement learning-based optimization strategies, while effective in fine-tuning molecular properties, can further complicate training stability and scalability. 
+Despite these advancements, open challenges persist. The generation of molecules that are simultaneously valid, diverse, and property-optimized 
+remains non-trivial. Many models struggle with achieving all three objectives concurrently. Additionally, evaluation metrics in molecular 
+generation are often inconsistent, making it difficult to directly compare model performance across studies. Reinforcement learning-based 
+optimization strategies, while effective in fine-tuning molecular properties, can further complicate training stability and scalability. 
 
-In this context, the present study revisits the DiPol-GAN architecture to evaluate its practical utility under modern evaluation standards and datasets. By reproducing the original model and conducting systematic benchmarking, we aim to assess its ability to generate chemically valid and functionally relevant molecular graphs. Furthermore, we explore potential enhancements to DiPol-GAN's training protocol and reward shaping functions to improve output diversity and property alignment. This work contributes toward validating and extending graph-based generative approaches in \it{de novo} drug discovery. 
+In this context, the present study revisits the DiPol-GAN architecture to evaluate its practical utility under modern evaluation standards and 
+datasets. By reproducing the original model and conducting systematic benchmarking, we aim to assess its ability to generate chemically valid 
+and functionally relevant molecular graphs. Furthermore, we explore potential enhancements to DiPol-GAN's training protocol and reward shaping 
+functions to improve output diversity and property alignment. This work contributes toward validating and extending graph-based generative approaches in \it{de novo} drug discovery. 
 
 \section{Methods}
 \subsection{Adjacency Matrix to Molecule}
@@ -477,13 +503,13 @@ For papers published in translation journals, please give the English
 citation first, followed by the original foreign-language citation \cite{b6}.
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\bibitem{b1} N. De Cao and T. Kipf, “MolGAN: An implicit generative model for small molecular graphs,” arXiv preprint arXiv:1805.11973, 2018. 
+\bibitem{b2} Rivas, P., Guarino, M., & Shah, A. "DiPol-GAN: Generating Molecular Graphs Adversarially with Relational Differentiable Pooling”. NeurIPS Workshop (2019).
+\bibitem{b3} Ying, Z., You, J., Morris, C., Ren, X., Hamilton, W., & Leskovec, J. (2018). Hierarchical Graph Representation Learning with Differentiable Pooling. Advances in Neural Information Processing Systems, 4800–4810. 
+\bibitem{b4} Ramakrishnan, R., Dral, P. O., Rupp, M., & von Lilienfeld, O. A. (2014). Quantum Chemistry Structures and Properties of 134 Kilo Molecules. Scientific Data, 1. (QM9) 
+\bibitem{b5} ZINC Database – http://zinc15.docking.org/ (ZINC-250k) 
+\bibitem{b6} W. Shi, M. Xu, Z. Zhu, W. Zhang, M. Zhang, J. Tang “GraphAF: A flow-based autoregressive model for molecular graph generation,” in Proc. Int. Conf. Learn. Representations (ICLR), 2020
+\bibitem{b7} Y. Liu, K. Yan, S. HJi, “GraphDF: A flow-based autoregressive model for molecular graph generation,” in Proc. Advances in Neural Inf. Process. Syst. (NeurIPS), 2021.
 \end{thebibliography}
 \vspace{12pt}
 \color{red}

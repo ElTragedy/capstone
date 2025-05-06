@@ -79,28 +79,46 @@ GAN, Hierarchical discriminator, DIFFPOOL, Reinforcement learning, Validity, Uni
 \begin{table}[H]
     \centering
     \caption*{Nomenclature}
-    \begin{tabular}{l r}
-        $A \in \mathbb{R}^{nxn}$ & adjacency matrix 
-        \\
-        $T = [t_1, t_2,...,t_n] \in \mathbb{Z}^n$ & atomic numbers (node features) 
-        \\
-        $B \in \mathbb{Z}^{nxn}$ & bond order matrix (optional) 
-        \\
-        $G = (V, E)$ & molecular graph with vertices V and edges E 
-        \\
-        $z \in \mathbb{R}^d$ & latent vector
-        \\
-        $n$ & number of nodes (atoms)
-        \\
-        $f$ & number of node features (atom types)
-        \\
-        $A \in [0, 1]^{n \times n}$ & soft adjacency matrix
-        \\
-        $T \in \mathbb{R}^{n \times f}$ & node feature matrix (softmax over atom types)
-        \\
-        $\mathcal{A}(z)$ & flattened adjacency matrix
-        \\
-        $\mathcal{T}(z)$ & flattened node features output
+    \begin{tabular}{p{4cm} | p{4cm}}
+        \hline
+        $A \in \mathbb{R}^{nxn}$ & adjacency matrix \\
+        \hline
+        $B \in \mathbb{Z}^{nxn}$ & bond order matrix (optional) \\
+        \hline
+        $G = (V, E)$ & molecular graph with vertices V and edges E \\
+        \hline
+        $z \in \mathbb{R}^d$ & latent vector \\
+        \hline
+        $n$ & number of nodes (atoms) \\
+        \hline
+        $f$ & number of node features (atom types) \\
+        \hline
+        $A \in [0, 1]^{n \times n}$ & soft adjacency matrix \\
+        \hline
+        $T \in \mathbb{R}^{n \times f}$ & node feature matrix (softmax over atom types) \\
+        \hline
+        $T_i \in \mathbb{R}^f$ & one-hot (or softmax) encoded atomic type of node $v_i$ \\
+        \hline
+        $\mathcal{A}(z)$ & flattened adjacency matrix \\
+        \hline
+        $\mathcal{T}(z)$ & flattened node features output \\
+        \hline
+        $\mathcal{H} = {v_i \in V \colon t_i = 1}$ & set of hydrogen atoms \\
+        \hline
+        $R(M)$ & total reward for generated molecule $M$ \\
+        \hline
+        $\bar{R} \leftarrow \alpha \bar{R} + (1 - \alpha)R(M) \text{, } \alpha = 0.99$ & exponentially smoothed baseline reward \\
+        \hline
+        $\mathcal{A}(z)$ & log probabilities from the generator \\
+        \hline
+        $\lambda_G = 3.0$, $\lambda_R = 7.0$ & scaling factors for generator and reward loss in scaled loss computation \\
+        \hline
+        $x^{(0)} = T$ & input node features \\
+        \hline
+        $\sigma (\cdot)$ & activation function \\
+        \hline
+        $\hat{y} \in \mathbb{R}^{n \times 1}$ & score per node critic output \\
+        \hline
     \end{tabular}
 \end{table}
 
@@ -165,121 +183,107 @@ and functionally relevant molecular graphs. Furthermore, we explore potential en
 functions to improve output diversity and property alignment. This work contributes toward validating and extending graph-based generative approaches in \it{de novo} drug discovery. 
 
 \section{Methods}
+
+\section{Equations}
 \subsection{Adjacency Matrix to Molecule}
 
 \subsubsection{Vertex Set (Atoms)} 
 \textnormal{Each atom is represented by a vertex:}
-\begin{center}
-    \begin{equation} 
-        V = \{v_i = Atom(t_i) | i = 1, 2,...,n\}
-        \label{eq:vertex}
-    \end{equation}
-\end{center}
+\begin{equation} 
+    V = \{v_i = Atom(t_i) | i = 1, 2,...,n\}
+    \label{eq:vertex}
+\end{equation}
 
 \textnormal{Optionally, if chirality tags are given:}
-\begin{center}
-    \begin{equation}
-        Chiral(v_i) = c_i \; for \; i \in C \subseteq \{1,...,n\}
-        \label{eq:chiral}
-    \end{equation}
-\end{center}
+\begin{equation}
+    Chiral(v_i) = c_i \; for \; i \in C \subseteq \{1,...,n\}
+    \label{eq:chiral}
+\end{equation}
 
 \subsubsection{Edge Set (Bonds)}
 \textnormal{For all i \begin{math} < \end{math} j:}
-\begin{align}
-    \text{If} \; A_{ij} > \tau: \quad
-    & o_{ij} = 
-    \begin{cases}
-        B_{ij}, & \text{if } B_{ij} > 0 \\
-        1, & \text{otherwise}
-    \end{cases} \notag \\
-    & E \ni e_{ij} = (v_i, v_j, \beta(o_{ij}))
+\begin{equation}
+    \begin{align}
+        &\textnormal{If} \; A_{ij} > \tau: \quad \\
+        &o_{ij} = 
+        \begin{cases}
+            B_{ij}, & \textnormal{if } B_{ij} > 0 \\
+            1, & \textnormal{otherwise}
+        \end{cases} \notag \\
+            &E \ni e_{ij} = (v_i, v_j, \beta(o_{ij}))
+    \end{align}
     \label{eq:bond_definition}
-\end{align}
+\end{equation}
     
 \textnormal{Where $\beta(o)$ maps bond order to bond type:}
-\begin{center}
-    \begin{equation}
-        \beta (o) = \begin{cases}
-        \text{\uppercase{single}}, & o=1 \\
-        \text{\uppercase{double}}, & o=2 \\
-        \text{\uppercase{triple}}, & o=3 \\
-        \text{\uppercase{aromatic}}, & o=4 \\
-        \text{undefined}, & \text{otherwise}
-        \end{cases}
-    \label{eq:bond_type}
-    \end{equation}
-\end{center}
+\begin{equation}
+    \beta (o) = \begin{cases}
+    \textnormal{\uppercase{single}}, & o=1 \\
+    \textnormal{\uppercase{double}}, & o=2 \\
+    \textnormal{\uppercase{triple}}, & o=3 \\
+    \textnormal{\uppercase{aromatic}}, & o=4 \\
+    \textnormal{undefined}, & \textnormal{otherwise}
+    \end{cases}
+\label{eq:bond_type}
+\end{equation}
 
 \subsubsection{Isolated Hydrogen Handling}
 \textnormal{Let:}
-\begin{center}
-    \begin{equation}
-        H = {i | t_i = 1 \wedge deg(v_i) = 0}
-        \label{eq:iso_hydro}
-    \end{equation}
-\end{center}
+\begin{equation}
+    H = {i | t_i = 1 \wedge deg(v_i) = 0}
+    \label{eq:iso_hydro}
+\end{equation}
 \textnormal{For each h $\in$ H:}
-\begin{center}
-    \begin{equation}
-        j^* = \arg\max_{\substack{j \notin H \\ j \ne h}} A_{hj}
-        \label{eq:argmax}
-    \end{equation}
-\end{center}
-\textnormal{If $deg(v_{j^*}) < \text{Valence}_{max}t_{j^*}$, then:}
-\begin{center}
-    \begin{equation}
-        E \ni e_{hj^*} = (v_h, v_{j^*}, \text{\uppercase{single}})
-        \label{eq:bond_hydro}
-    \end{equation}
-\end{center}
+\begin{equation}
+    j^* = \arg\max_{\substack{j \notin H \\ j \ne h}} A_{hj}
+    \label{eq:argmax}
+\end{equation}
+\textnormal{If $deg(v_{j^*}) < \textnormal{Valence}_{max}t_{j^*}$, then:}
+\begin{equation}
+    E \ni e_{hj^*} = (v_h, v_{j^*}, \textnormal{\uppercase{single}})
+    \label{eq:bond_hydro}
+\end{equation}
 \textnormal{Else:}
-\begin{center}
-    \begin{equation}
-        V \leftarrow V \setminus \{ v_h \}
-        \label{eq:remove_hydro}
-    \end{equation}
-\end{center}
+\begin{equation}
+    V \leftarrow V \setminus \{ v_h \}
+    \label{eq:remove_hydro}
+\end{equation}
 
 \subsubsection{Molecule}
 \textnormal{The final molecule is:}
-\begin{center}
-    \begin{equation}
-        M = Sanitize(G = (V,\; E))
-        \label{eq:molecule}
-    \end{equation}
-\end{center}
+\begin{equation}
+    M = \textnormal{Sanitize}(G = (V,\; E))
+    \label{eq:molecule}
+\end{equation}
 
-\begin{figure*}[!t]
-    \begin{equation}
-    R_{\text{validity}}(M) = 
-    \begin{cases}
-        -0.5, & \text{if } M \text{ is None or fails sanitization} \\
-        \max\left(0,\; 5 - \left|\sum_{v_i \in V}(\text{Valence}_{\max}(t_i) - \deg(v_i))\right|\right), & \text{otherwise}
-    \end{cases}
-    \label{eq:validity}
-    \end{equation}
-\hrulefill
-\vspace*{4pt}
-\end{figure*}
-    
-    
 \subsection{Reward Policy Network}
 \subsubsection{Validity Reward}
-Let $M$ be a candidate molecule derived from $(A, T)$. Let $\text{Valence}_{\max}(t_i)$ be the maximum valence 
+Let $M$ be a candidate molecule derived from $(A, T)$. Let $\textnormal{Valence}_{\max}(t_i)$ be the maximum valence 
 for atom type $t_i$, and let $\deg(v_i)$ be the current explicit valence (degree) of atom $v_i \in V$.
-See Eq.~\ref{eq:validity} for the validity reward function.   
+
+\begin{equation}
+    \resizebox{0.45\textwidth}{!}{$
+        R_{\textnormal{validity}}(M) = 
+        \begin{cases}
+            -0.5, & \textnormal{if } M \textnormal{ is None or fails sanitization} \\
+            \max\left(0,\; 5 - \left|\sum_{v_i \in V}(\textnormal{Valence}_{\max}(t_i) - \deg(v_i))\right|\right), & \textnormal{otherwise}
+        \end{cases}
+    $}
+    \label{eq:validity}
+\end{equation}
 
 \subsubsection{Stray Hydrogen Reward}
-Let $H\subset V$ be the set of hydrogen atoms, and let deg($v_i$) be the degree of atom $v_i$.
+Let $H \subset V$ be the set of hydrogen atoms, and let deg($v_i$) be the degree of atom $v_i$.
 
 \small{
     \begin{equation}
-        R_{\text{stray}}(M) = 
-        \begin{cases}
-            -0.5, & \text{if } M \text{ is None or } \exists v_i \in H \text{ such that } \deg(v_i) = 0 \\
-            0.5, & \text{otherwise}
-        \end{cases}
+        \resizebox{0.45\textwidth}{!}{$
+            R_{\textnormal{stray}}(M) = 
+            \begin{cases}
+                -0.5, & \textnormal{if } M \textnormal{ is None or } \exists v_i \in H \textnormal{ such that } \deg(v_i) = 0 \\
+                0.5, & \textnormal{otherwise}
+            \end{cases}
+        $}
         \label{eq:stray}
     \end{equation}
 }    
@@ -291,11 +295,13 @@ appears in $\mathcal{G}$.}
 
 \small{
     \begin{equation}
-        R_{\text{unique}}(M, \mathcal{G}) =
-        \begin{cases}
-            -0.3, & \text{if } R_{\text{validity}}(M) = 0 \\
-            \max\left(0, \min\left(1, 1 - \frac{|G| + 1}{\text{count}_G(S(M))} \right) \right), & \text{otherwise}
-        \end{cases}
+        \resizebox{0.45\textwidth}{!}{$
+            R_{\textnormal{unique}}(M, \mathcal{G}) =
+            \begin{cases}
+                -0.3, & \textnormal{if } R_{\textnormal{validity}}(M) = 0 \\
+                \max\left(0, \min\left(1, 1 - \frac{|G| + 1}{\textnormal{count}_G(S(M))} \right) \right), & \textnormal{otherwise}
+            \end{cases}
+        $}
         \label{eq:uniqueness}
     \end{equation}
 }
@@ -305,12 +311,12 @@ appears in $\mathcal{G}$.}
 
 \small{
     \begin{equation}
-        R_{\text{novelty}}(M, T, \mathcal{G}) =
+        R_{\textnormal{novelty}}(M, T, \mathcal{G}) =
         \begin{cases}
-            -0.3, & \text{if } R_{\text{validity}}(M) = 0 \\
-            -2.5, & \text{if } R_{\text{unique}}(M, \mathcal{G}) < 1 \\
-            -0.7, & \text{if } S(M) \in T \\
-            2.3, & \text{otherwise}
+            -0.3, & \textnormal{if } R_{\textnormal{validity}}(M) = 0 \\
+            -2.5, & \textnormal{if } R_{\textnormal{unique}}(M, \mathcal{G}) < 1 \\
+            -0.7, & \textnormal{if } S(M) \in T \\
+            2.3, & \textnormal{otherwise}
         \end{cases}
         \label{eq:novelty}
     \end{equation}        
@@ -320,9 +326,9 @@ appears in $\mathcal{G}$.}
 \textnormal{Let $Q(M) \in [0, 1]$ be the RDKit QED score of molecule $M$.}
 \small{
     \begin{equation}
-        R_{\text{drug}}(M) = \begin{cases}
-            Q(M), & \text{if } R_{\text{validity}}(M) > 0 \\
-            -0.3, & \text{otherwise}
+        R_{\textnormal{drug}}(M) = \begin{cases}
+            Q(M), & \textnormal{if } R_{\textnormal{validity}}(M) > 0 \\
+            -0.3, & \textnormal{otherwise}
         \end{cases}
         \label{eq:drug}
     \end{equation}
@@ -331,8 +337,10 @@ appears in $\mathcal{G}$.}
 \subsubsection{Total Reward}
 \small{
     \begin{equation}
-        R_{\text{validity}}(M) + R_{\text{stray}}(M) + R_{\text{unique}}(M, \mathcal{G}) + R_{\text{novelty}}(M, \mathcal{T}, \mathbb{G}) + R_{\text{drug}}(M)
-    \label{eq:total_reward}
+        \resizebox{0.45\textwidth}{!}{$
+            R_{\textnormal{validity}}(M) + R_{\textnormal{stray}}(M) + R_{\textnormal{unique}}(M, \mathcal{G}) + R_{\textnormal{novelty}}(M, \mathcal{T}, \mathbb{G}) + R_{\textnormal{drug}}(M)
+        $}
+        \label{eq:total_reward}
     \end{equation}
 }
 
@@ -353,17 +361,78 @@ appears in $\mathcal{G}$.}
 \begin{itemize}
     \item $\mathcal{A}(z) \in \mathbb{R}^{n^2}$ \textnormal{, reshaped and symmetrized:}
         \begin{equation}
-            A = \frac{1}{2}(\text{reshape})(\mathcal{A}(z)) + (\text{reshape}(\mathcal{A}(z))^T)
+            A = \frac{1}{2}(\textnormal{reshape})(\mathcal{A}(z)) + (\textnormal{reshape}(\mathcal{A}(z))^T)
+            \label{eq:adjacency}
         \end{equation}
     \item \textnormal{Then row-wise softmax is applied to normalize:}
         \begin{equation}
             A_{ij} = \frac{exp(A_{ij})}{\sum_k exp(A_{ik})}
+            \label{eq:softmax_1}
         \end{equation}
     \item $T$ \textnormal{is obtained from:}
         \begin{equation}
-            
+            T = \textnormal{reshape}(\mathcal{T}(z)) \in \mathbb{R}^{n \times f}, T_i = \textnormal{softmax}(T_i)
+            \label{eq:T}
         \end{equation}
-    \item 
+    \item \textnormal{Then the atom types $t_i \in {1, 6, 7, 8, 9}$ are selected by:}
+        \begin{equation}
+            t_i = \beta (\arg\max_k T_{ik})
+            \label{eq:atom_type}
+        \end{equation}
+        \textnormal{Where $\beta(o)$ is the bond type mapping (i.e., atomic number index map).}
+    \end{itemize}
+
+\subsubsection{Hydrogen Fixing Logic}
+\textnormal{For each $v_i \in \mathcal{H}$, if:}
+\begin{equation}
+    \textnormal{deg}(v_i) = \sum_j{A_{ij} < \tau} \textnormal{with $\tau$ = 0.5}
+    \label{eq:hydrogen_fix_1}
+\end{equation}    
+\textnormal{Then set:}
+\begin{equation}
+    A_{ij^*} = A_{j^*i} = 0.9 \; \textnormal{where} \; j^* = \arg\max_{j \ne i} A_{ij}
+    \label{eq:hydrogen_fix_2}
+\end{equation}
+
+\subsubsection{Critic Loss}
+\textnormal{Let $D$ be the discriminator.}
+\\
+\textnormal{For real and generated pairs:}
+\begin{itemize}
+    \item $D(A, T) \in [0, 1]$
+    \item \textnormal{Use smoothed labels:} $y_{real} = 0.9$, $y_{fake} = 0.1$
+\end{itemize}
+\textnormal{Binary cross-entropy:}
+\begin{equation}
+    \mathcal{L}_D = \textnormal{BCE}(y_{real}, D(A_{real}, T_{real})) + \textnormal{BCE}(y_{fake}, D(A_{gen}, T_{gen}))
+    \label{eq:loss_D}
+\end{equation}
+
+\subsubsection{Generator Loss with Reinforcement Learning}
+\textnormal{Advantage:}
+\begin{equation}
+    A(M) = R(M) - \bar{R}
+    \label{eq:advantage}
+\end{equation}
+\textnormal{Generator loss:}
+\begin{equation}
+    \mathcal{L}_G = \textnormal{BCE}(1, D(A_{gen}, T_{gen}))
+    \label{eq:loss_G}
+\end{equation}
+\textnormal{Combined scaled loss:}
+\begin{equation}
+    \mathcal{L}_{scaled} = \lambda_G \times \mathcal{L}_G - \lambda_R \times \mathbb{E}_{z \sim \mathcal{N}(0, 1)}[log(P(z)) \times A(M)]
+    \label{eq:scaled_loss}
+\end{equation}
+
+\subsection{Critic without Differentiable Pooling}
+\subsubsection{First Layer (Dense Transformation)}
+
+\subsubsection{Second Layer (Dense Transformation)}
+
+\subsubsection{Final Layer (Output Scores)}
+
+\subsection{Critic with Differentiable Pooling}
 
 \begin{thebibliography}{00}
 \bibitem{b1} N. De Cao and T. Kipf, “MolGAN: An implicit generative model for small molecular graphs,” arXiv preprint arXiv:1805.11973, 2018. 

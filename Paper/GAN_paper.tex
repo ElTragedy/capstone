@@ -31,19 +31,12 @@ Waco, TX \\
 \maketitle
 
 \begin{abstract}
-Recent advances in deep-generative models have allowed the generation of chemically valid and novel molecules with 
-desirable properties for further investigation. In this work, we provide such a model, integrating generative 
-adversarial networks (GANs), hierarchical graph discrimination, and reinforcement learning. Our graph-based 
-generator generates molecular graphs in the form of adjacency and node feature matrices. To improve robustness 
-and stability during training, we implement a hierarchical differentiable pooling (DIFFPOOL)-based discriminator. 
-This type of discriminator allows our model to learn coarse-grained graph representations during training. 
-Additionally, we introduce a reinforcement learning component in which a policy network receives reward signals 
-based on predicted chemical properties, guiding the generator toward structures with high drug-likeness and other 
-target metrics. In evaluating our approach, we look for validity, uniqueness, novelty, and alignment with 
-drug-likeness metric scores. The results demonstrate improved generation quality and training stability compared 
-to baseline graph GANs, particularly when incorporating DIFFPOOL and reinforcement-guided reward shaping. 
-Our findings suggest that the combination of hierarchical discrimination with reinforcement learning shows 
-a positive trajectory for property-driven molecular design in drug discovery and materials science.
+Recent advances in deep generative models enable the creation of chemically valid, novel molecules with desirable 
+properties. We present a model integrating generative adversarial networks (GANs), hierarchical graph critics, 
+and reinforcement learning. Our graph-based generator outputs adjacency and node feature matrices, while a 
+DIFFPOOL-based critic learns coarse-grained graph representations to improve training stability. Reinforcement 
+learning further guides generation toward high drug-likeness and other target metrics. We evaluate validity, 
+uniqueness, novelty, and metric alignment, showing improved quality and stability over baseline graph GANs. 
 \end{abstract}
 
 \begin{IEEEkeywords}

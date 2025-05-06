@@ -38,3 +38,10 @@ python run.py
 
 Just click the run button :)
 
+
+ # Deploy with Kuber
+
+ docker build -t capstone-app:0.1 .
+
+ kubectl apply -f deploy.yaml
+kubectl apply -f svc.yaml

@@ -109,8 +109,6 @@ GAN, Hierarchical discriminator, DIFFPOOL, Reinforcement learning, Validity, Uni
         \hline
         $\bar{R} \leftarrow \alpha \bar{R} + (1 - \alpha)R(M) \text{, } \alpha = 0.99$ & exponentially smoothed baseline reward \\
         \hline
-        $\mathcal{A}(z)$ & log probabilities from the generator \\
-        \hline
         $\lambda_G = 3.0$, $\lambda_R = 7.0$ & scaling factors for generator and reward loss in scaled loss computation \\
         \hline
         $x^{(0)} = T$ & input node features \\
@@ -427,12 +425,23 @@ appears in $\mathcal{G}$.}
 
 \subsection{Critic without Differentiable Pooling}
 \subsubsection{First Layer (Dense Transformation)}
-
+\begin{equation}
+    x^{(1)} = \textnormal{ReLU}(W_1x^{(0)} + b_1) \textnormal{, } W_1 \in \mathbb{R}^{f \times 64}
+    \label{eq:layer_1_nodiff}
+\end{equation}
 \subsubsection{Second Layer (Dense Transformation)}
-
+\begin{equation}
+    x^{(2)} = \textnormal{ReLU}(W_2x^{(1)} + b_2) \textnormal{, } W_2 \in \mathbb{R}^{64 \times 128}
+    \label{eq:layer_2_nodiff}
+\end{equation}
 \subsubsection{Final Layer (Output Scores)}
+\begin{equation}
+    \hat{y} = \sigma(W_3x^{(2)} + b_3) \textnormal{, } W_3 \in \mathbb{R}^{128 \times 1}
+    \label{eq:layer_3_nodiff}
+\end{equation}
 
 \subsection{Critic with Differentiable Pooling}
+
 
 \begin{thebibliography}{00}
 \bibitem{b1} N. De Cao and T. Kipf, “MolGAN: An implicit generative model for small molecular graphs,” arXiv preprint arXiv:1805.11973, 2018. 

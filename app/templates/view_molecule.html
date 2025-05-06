@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Molecule</title>
+    <link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css">
+    <style>
+        body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .molecule-card {
+            background: rgba(236, 240, 241, 0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        .viewer-container {
+            background: rgba(236, 240, 241, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            padding: 0.75rem 2.5rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .title {
+            color: #ecf0f1;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="level" style="margin-bottom: 2rem;">
+            <div class="level-left">
+                <div class="level-item">
+                    <a href="/leaderboard" class="button">Back to Leaderboard</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="molecule-card">
+            <h1 class="title has-text-centered">Molecule Details</h1>
+            <div class="content has-text-centered">
+                <p><strong>Created by:</strong> {{ submission.user_name }}</p>
+                <p><strong>Score:</strong> {{ submission.score }}</p>
+                <p><strong>Created at:</strong> {{ submission.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+        </div>
+
+        <div class="viewer-container">
+            <!-- 2D Viewer -->
+            <canvas id="viewer2d" style="max-width: 500px; margin: 0 auto;"></canvas>
+
+            <!-- Commented out 3D viewer for now -->
+            <!--
+            <div id="viewer" style="width: 100%; height: 400px; position: relative; display: none;"></div>
+            <div class="buttons has-text-centered" style="margin-top: 1rem;">
+                <button onclick="switchView('3d')" class="button">Show 3D</button>
+                <button onclick="switchView('2d')" class="button">Show 2D</button>
+            </div>
+            -->
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Commented out 3Dmol.js for now -->
+    <!-- <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script> -->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load 2D structure
+            fetch("/get_mol_image")
+                .then(response => {
+                    if (!response.ok) throw new Error("Failed to fetch image");
+                    return response.blob();
+                })
+                .then(blob => {
+                    let img = new Image();
+                    let canvas = document.getElementById("viewer2d");
+                    let ctx = canvas.getContext("2d");
+
+                    img.onload = function() {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = URL.createObjectURL(blob);
+                })
+                .catch(error => console.error("Error loading 2D structure:", error));
+
+            /* Commented out 3D functionality for now
+            function load3DStructure() {
+                // 3D viewer code here
+            }
+
+            function switchView(mode) {
+                if (mode === "3d") {
+                    $("#viewer").show();
+                    $("#viewer2d").hide();
+                } else {
+                    $("#viewer").hide();
+                    $("#viewer2d").show();
+                }
+            }
+            */
+        });
+    </script>
+</body>
+
+</html> 

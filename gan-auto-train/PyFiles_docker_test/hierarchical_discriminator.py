@@ -5,28 +5,28 @@ from tensorflow.keras import layers
 class DiffPoolLayer(tf.keras.layers.Layer):
     def __init__(self, input_dim, assign_dim, output_dim):
         super(DiffPoolLayer, self).__init__()
-        self.assign_conv = layers.Dense(assign_dim, activation='softmax')  
-        self.embed_conv = layers.Dense(output_dim, activation='relu')      
+        self.assign_conv = layers.Dense(assign_dim, activation = 'softmax')  
+        self.embed_conv = layers.Dense(output_dim, activation = 'relu')      
 
     def call(self, A, X):
         S = self.assign_conv(X)                
         Z = self.embed_conv(X)                  
-        X_pool = tf.matmul(S, Z, transpose_a=True)   
+        X_pool = tf.matmul(S, Z, transpose_a = True)   
         A_pool = tf.matmul(S, A)               
-        A_pool = tf.matmul(A_pool, S, transpose_b=True)  
+        A_pool = tf.matmul(A_pool, S, transpose_b = True)  
         return A_pool, X_pool
 
 class HierarchicalGraphDiscriminator(tf.keras.Model):
-    def __init__(self, num_nodes, node_features, assign_dim1=10, assign_dim2=5):
+    def __init__(self, num_nodes, node_features, assign_dim1 = 10, assign_dim2 = 5):
         super(HierarchicalGraphDiscriminator, self).__init__()
 
-        self.diffpool1 = DiffPoolLayer(input_dim=node_features, assign_dim=assign_dim1, output_dim=64)
-        self.diffpool2 = DiffPoolLayer(input_dim=64, assign_dim=assign_dim2, output_dim=128)
+        self.diffpool1 = DiffPoolLayer(input_dim = node_features, assign_dim = assign_dim1, output_dim = 64)
+        self.diffpool2 = DiffPoolLayer(input_dim = 64, assign_dim = assign_dim2, output_dim = 128)
 
         self.global_pool = layers.GlobalAveragePooling1D()
-        self.classifier = layers.Dense(1, activation='sigmoid')
+        self.classifier = layers.Dense(1, activation = 'sigmoid')
 
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002)
 
     def call(self, A, X):
         A1, X1 = self.diffpool1(A, X)  

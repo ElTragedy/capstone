@@ -161,24 +161,39 @@ functions to improve output diversity and property alignment. This work contribu
 \section{Methods}
 
 \subsection{Dataset and Preprocessing}
-We trained our model using the QM9 dataset~\cite{b4}, a collection of over 134,000 small organic molecules composed of hydrogen, carbon, nitrogen, oxygen, and fluorine. Each molecule was transformed into a graph structure using RDKit, resulting in an adjacency matrix $A \in \mathbb{R}^{n \times n}$ and a node feature matrix $T \in \mathbb{R}^{n \times f}$, where $n$ is the number of atoms and $f$ is the number of atom types. We filtered the data to exclude overly large molecules and standardized each molecule to a maximum node count of 9 and 5 node features (atom types). SMILES strings were retained for uniqueness and novelty evaluation.
+We trained our model using the QM9 dataset~\cite{b4}, a collection of over 134,000 small organic molecules composed of hydrogen, 
+carbon, nitrogen, oxygen, and fluorine. Each molecule was transformed into a graph structure using RDKit, resulting in an adjacency 
+matrix $A \in \mathbb{R}^{n \times n}$ and a node feature matrix $T \in \mathbb{R}^{n \times f}$, where $n$ is the number of atoms 
+and $f$ is the number of atom types. We filtered the data to exclude overly large molecules and standardized each molecule to a maximum 
+node count of 9 and 5 node features (atom types). SMILES strings were retained for uniqueness and novelty evaluation.
 
 \subsection{Generator Architecture}
-The generator is a neural network that maps a latent vector $z \in \mathbb{R}^d$ to a molecular graph in the form of $(A, T)$, as described in Eq.~\eqref{eq:generator}. Internally, the generator uses a multi-layer perceptron to output a flattened adjacency matrix and node feature matrix, which are then reshaped, symmetrized, and softmax-normalized. We used soft Gumbel-Softmax sampling to approximate discrete outputs. Atom types are then clipped and mapped to valid atomic numbers: H, C, N, O, and F.
+The generator is a neural network that maps a latent vector $z \in \mathbb{R}^d$ to a molecular graph in the form of $(A, T)$, as 
+described in Eq.~\eqref{eq:generator}. Internally, the generator uses a multi-layer perceptron to output a flattened adjacency matrix 
+and node feature matrix, which are then reshaped, symmetrized, and softmax-normalized. We used soft Gumbel-Softmax sampling to approximate 
+discrete outputs. Atom types are then clipped and mapped to valid atomic numbers: H, C, N, O, and F.
 
-The generator is trained using a combined loss function consisting of binary cross-entropy (Eq.~\eqref{eq:loss_G}) and a reward-weighted policy gradient component based on total reward $R(M)$ (Eq.~\eqref{eq:total_reward}). Training uses the Adam optimizer with a learning rate of 0.0005 and $\beta_1 = 0.5$.
+The generator is trained using a combined loss function consisting of binary cross-entropy (Eq.~\eqref{eq:loss_G}) and a reward-weighted 
+policy gradient component based on total reward $R(M)$ (Eq.~\eqref{eq:total_reward}). Training uses the Adam optimizer with a learning rate 
+of 0.0005 and $\beta_1 = 0.5$.
 
 \subsection{Discriminator Architectures}
-We implemented two versions of the discriminator: one that processes node features directly and another that incorporates global pooling to capture graph-level representations.
+We implemented two versions of the discriminator: one that processes node features directly and another that incorporates global pooling to 
+capture graph-level representations.
 
 \subsubsection{Without Global Pooling}
-The baseline discriminator processes the node features using two fully connected layers with ReLU activations, followed by a sigmoid output layer (see Eq.~\eqref{eq:layer_3_nodiff}). It is trained using binary cross-entropy loss with label smoothing for real and fake labels (Eq.~\eqref{eq:loss_D}).
+The baseline discriminator processes the node features using two fully connected layers with ReLU activations, followed by a sigmoid output 
+layer (see Eq.~\eqref{eq:layer_3_nodiff}). It is trained using binary cross-entropy loss with label smoothing for real and fake labels 
+(Eq.~\eqref{eq:loss_D}).
 
 \subsubsection{With Global Pooling}
-The second discriminator variant extends the baseline by adding a global average pooling layer after the dense layers, which aggregates node-level representations into a single graph embedding before classification. This allows the model to capture coarse structural information without explicitly learning assignment matrices, as in DiffPool~\cite{b3}.
+The second discriminator variant extends the baseline by adding a global average pooling layer after the dense layers, which aggregates
+node-level representations into a single graph embedding before classification. This allows the model to capture coarse structural information 
+without explicitly learning assignment matrices, as in DiffPool~\cite{b3}.
 
 \subsection{Reward Policy Network}
-We used reinforcement learning to guide generation toward chemically meaningful and pharmaceutically desirable structures. The reward function $R(M)$ consists of five components:
+We used reinforcement learning to guide generation toward chemically meaningful and pharmaceutically desirable structures. The reward function
+$R(M)$ consists of five components:
 
 \begin{itemize}
     \item \textbf{Validity:} Ensures chemical sanitization (Eq.~\eqref{eq:validity}).
@@ -188,10 +203,13 @@ We used reinforcement learning to guide generation toward chemically meaningful 
     \item \textbf{Drug-likeness:} Uses RDKit’s QED score (Eq.~\eqref{eq:drug}).
 \end{itemize}
 
-Rewards are combined and smoothed using a running baseline $\bar{R}$ to compute the advantage (Eq.~\eqref{eq:advantage}), which is used in the generator’s scaled loss (Eq.~\eqref{eq:scaled_loss}).
+Rewards are combined and smoothed using a running baseline $\bar{R}$ to compute the advantage (Eq.~\eqref{eq:advantage}), which is used in the
+generator’s scaled loss (Eq.~\eqref{eq:scaled_loss}).
 
 \subsection{Training Protocol}
-We trained our models for up to 10 epochs using batch sizes of 16. Latent vectors $z$ were sampled from a standard Gaussian distribution. For the DiffPool version, the discriminator used 64 hidden units and clustered nodes into 5 groups, as described in Eq.~\eqref{eq:diffpool_S}. All experiments used the Adam optimizer with a learning rate of $1 \times 10^{-4}$.
+We trained our models for up to 10 epochs using batch sizes of 16. Latent vectors $z$ were sampled from a standard Gaussian distribution. For
+the DiffPool version, the discriminator used 64 hidden units and clustered nodes into 5 groups, as described in Eq.~\eqref{eq:diffpool_S}. All 
+experiments used the Adam optimizer with a learning rate of $1 \times 10^{-4}$.
 
 \subsection{Evaluation Metrics}
 Model performance was evaluated on four core metrics:

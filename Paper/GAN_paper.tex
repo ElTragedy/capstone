@@ -177,19 +177,17 @@ The generator is trained using a combined loss function consisting of binary cro
 policy gradient component based on total reward $R(M)$ (Eq.~\eqref{eq:total_reward}). Training uses the Adam optimizer with a learning rate 
 of 0.0005 and $\beta_1 = 0.5$.
 
-\subsection{Discriminator Architectures}
-We implemented two versions of the discriminator: one that processes node features directly and another that incorporates global pooling to 
-capture graph-level representations.
+\subsection{Critic Architectures}
+We implemented two versions of the Critic: with and without differentiable pooling.
 
-\subsubsection{Without Global Pooling}
-The baseline discriminator processes the node features using two fully connected layers with ReLU activations, followed by a sigmoid output 
-layer (see Eq.~\eqref{eq:layer_3_nodiff}). It is trained using binary cross-entropy loss with label smoothing for real and fake labels 
-(Eq.~\eqref{eq:loss_D}).
+\subsubsection{Without Differentiable Pooling}
+The baseline critic processes the node features using two fully connected layers with ReLU activations followed by global average pooling 
+and a sigmoid output (see Eq.~\eqref{eq:layer_3_nodiff}). It is trained using smoothed real/fake labels and binary cross-entropy (Eq.~\eqref{eq:loss_D}).
 
-\subsubsection{With Global Pooling}
-The second discriminator variant extends the baseline by adding a global average pooling layer after the dense layers, which aggregates
-node-level representations into a single graph embedding before classification. This allows the model to capture coarse structural information 
-without explicitly learning assignment matrices, as in DiffPool~\cite{b3}.
+\subsubsection{With Differentiable Pooling}
+The DiffPool version~\cite{b3} extends the critic by adding two learned assignment matrices $S^{(1)}$ and $S^{(2)}$ (Eqs.~\eqref{eq:diffpool_1_S} 
+and \eqref{eq:diffpool_2_S}) that cluster nodes into coarse representations. Graph coarsening is performed hierarchically, allowing the 
+model to better capture global structure. The final output is computed from a globally pooled graph embedding.
 
 \subsection{Reward Policy Network}
 We used reinforcement learning to guide generation toward chemically meaningful and pharmaceutically desirable structures. The reward function
